@@ -20,12 +20,11 @@ github:
     addLabel: true
     addBadge: true
 gitConfig:
-  bash:
-    showColorHints: true
-    showUntrackedFiles: true
-    showStashState: true
-    showDirtyState: true
-    hidePwdIfIgnored: true
+  bash.showColorHints: "true"
+  bash.showUntrackedFiles: "true"
+  bash.showStashState: "true"
+  bash.showDirtyState: "true"
+  bash.hidePwdIfIgnored: "true"
 vscode:
   extensions:
     - eamodio.gitlens

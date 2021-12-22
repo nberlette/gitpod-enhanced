@@ -18,7 +18,7 @@ RUN sudo apt-get -y update \
  && sudo apt-get -y install git-extras neovim
 
 ADD "https://github.com/git/git/raw/master/contrib/completion/git-prompt.sh" /home/gitpod/.bashrc.d/10-prompt
-COPY .bashrc.d/profile.sh /home/gitpod/.bashrc.d/11-profile
+COPY .bashrc.d/profile.sh /home/gitpod/.bashrc.d/20-profile
 
 ## -------------------------------------------------- ##
 ##        END OF GITPOD-ENHANCED DOCKERFILE           ##

@@ -4,5 +4,6 @@
   "editor.bracketPairColorization.enabled": true,
   "editor.formatOnPaste": true,
   "editor.formatOnType": true,
-  "editor.formatOnSave": false
+  "editor.formatOnSave": false,
+  "terminal.integrated.env.linux": {}
 }

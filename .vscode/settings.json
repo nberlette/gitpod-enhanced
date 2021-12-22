@@ -1,0 +1,8 @@
+{
+  "gitlens.showWelcomeOnInstall": false,
+  "editor.defaultFormatter": "esbenp.prettier-vscode",
+  "editor.bracketPairColorization.enabled": true,
+  "editor.formatOnPaste": true,
+  "editor.formatOnType": true,
+  "editor.formatOnSave": false
+}

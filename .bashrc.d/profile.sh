@@ -92,11 +92,15 @@ PATH="$(yarn global bin):$PATH" && dedupe_path && export PATH;
 
 #### SAFELY ADD GLOBAL PKGS WITH YARN
 __global_add () {
-  for pkg in "${@}"; do which "$pkg" > /dev/null || yarn global add "$pkg"; done
+  for pkg in "${@}"; do 
+    if [ -e "$(yarn global dir)/node_modules/$pkg" ]; then
+        yarn global add --prefer-offline --silent --no-progress "$pkg"
+    fi
+  done
 }
 
 #### GLOBAL: add degit + typescript support
-__global_add degit typescript ts-standard ts-node
+__global_add degit typescript ts-standard ts-node @types/node
 
 #### CONFIGURE  @antfu/ni 
 [ ! -f "$HOME/.nirc" ] \

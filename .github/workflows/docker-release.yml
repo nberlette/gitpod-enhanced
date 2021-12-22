@@ -1,0 +1,26 @@
+name: Docker Release
+
+on:
+  workflow_dispatch:
+  repository_dispatch:
+  push:
+    branches:
+      - main
+    paths:
+      - bin/scripts/docker-entrypoint.sh
+      - .dockerignore
+      - Dockerfile
+      - setup.sh
+
+jobs:
+  publish-image:
+    name: Publish Docker Image
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - name: Build Image
+        run: docker build -t nberlette/gitpod-enhanced .
+      - name: Push Image
+        run: |
+          docker login -u ${{ secrets.DOCKER_USER }} -p ${{ secrets.DOCKER_PAT }}
+          docker push nberlette/gitpod-enhanced

@@ -1,0 +1,37 @@
+image:
+  file: .gitpod/Dockerfile
+ports:
+  - port: 3000 
+    onOpen: notify
+    visibility: private
+  - port: 5000
+    onOpen: notify
+    visibility: public
+tasks:
+  - init: |
+      yarn install
+      yarn global add pnpm @antfu/ni degit typescript ts-standard ts-node @types/node
+github:
+  prebuilds:
+    master: true
+    branches: true
+    pullRequests: true
+    pullRequestsFromForks: false
+    addLabel: true
+    addBadge: true
+gitConfig:
+  bash:
+    showColorHints: true
+    showUntrackedFiles: true
+    showStashState: true
+    showDirtyState: true
+    hidePwdIfIgnored: true
+vscode:
+  extensions:
+    - eamodio.gitlens
+    - svelte.svelte-vscode
+    - esbenp.prettier-vscode
+    - dbaeumer.vscode-eslint
+    - christian-kohler.npm-intellisense
+    - ms-azuretools.vscode-docker
+

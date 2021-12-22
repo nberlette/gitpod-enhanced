@@ -16,6 +16,8 @@ This is based on the official [**gitpod/workspace-full**](https://hub.docker.com
 
 - Secure solution for PGP-signing commits from Gitpod
 
+---  
+
 ## Git Prompt Configuration
 
 Below is a list of all the available `GIT_PS1_` variables and their default values, which control the functionality and display of the integrated git prompt.
@@ -38,9 +40,7 @@ GIT_PS1_FORMAT="%s"
 
 ### Overriding the Defaults
 
-You can change or remove any of these from the Gitpod Dashboard Settings under `Environment Variables`.  
-
-Alternatively, you can override them in `.vscode/settings.json` via `terminal.integrated.env.linux`, like so:
+You can change or remove any of these from the Gitpod Dashboard Settings under `Environment Variables`. Alternatively, you can override in `.vscode/settings.json`, with the `terminal.integrated.env.linux` option:
 
 ```json
 {
@@ -61,7 +61,17 @@ gitConfig:
   bash.hidePwdIfIgnored: "false"
 ```
 
-> Please note, you currently can only *disable* values with `git config`, not change or enable them.
+> Please note: currently you can only *disable* values with `git config`
+
+### Customizing the `PS1` prompt string
+
+The last three options listed, `GIT_PS1_PREFIX`, `GIT_PS1_SUFFIX`, `GIT_PS1_FORMAT` allow you to change the colors and format of the surrounding `PS1` prompt string. These have no `git config` equivalent, and must either be set in the `settings.json` file, the Gitpod Dashboard, or by exporting new values in your bash profile:
+
+```bash
+echo 'export GIT_PS1_PREFIX="..."' >> ~/.bashrc.d/20-profile
+```
+
+---  
 
 ## License
 

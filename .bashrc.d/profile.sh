@@ -83,30 +83,32 @@ export GIT_PS1_STATESEPARATOR=${GIT_PS1_STATESEPARATOR:-' '}
 export GIT_PS1_DESCRIBE_STYLE=${GIT_PS1_DESCRIBE_STYLE:-tag}
 export GIT_PS1_HIDE_IF_PWD_IGNORED=${GIT_PS1_HIDE_IF_PWD_IGNORED:-''}
 
-export GIT_PS1_PREFIX=${GIT_PS1_PREFIX:-"\[\e]0;\u \W\e\]\[\e[1;7;33m\] \u \[\e[0;7;36m\] \w \[\e[0;1m\] "}
-export GIT_PS1_SUFFIX=${GIT_PS1_SUFFIX:-"\[\e[0m\]\n\[\e[1;32;6m\]\$\[\e[0m\] "}
-export GIT_PS1_FORMAT=${GIT_PS1_FORMAT:-" git:(%s) "}
+export GIT_PS1_PREFIX=${GIT_PS1_PREFIX:-"\[\e]0;\u \W\e\]\[\e[1;7;33m\] \u \[\e[0;7;36m\] \w \[\e[0;1m\] git:("}
+export GIT_PS1_SUFFIX=${GIT_PS1_SUFFIX:-"\[\e[1m\])\[\e[0m\]\n\[\e[1;32;6m\]\$\[\e[0m\] "}
+export GIT_PS1_FORMAT=${GIT_PS1_FORMAT:-"%s"}
 
 #### ADD yarn global bin to PATH; deduplicate
 PATH="$(yarn global bin):$PATH" && dedupe_path && export PATH;
 
 #### SAFELY ADD GLOBAL PKGS WITH YARN
 __global_add () {
+  local list=$(yarn global list)
   for pkg in "${@}"; do 
-    if [ -e "$(yarn global dir)/node_modules/$pkg" ]; then
-        yarn global add --prefer-offline --silent --no-progress "$pkg"
+    if ! echo "$list" | grep -q -E "${pkg}"; then
+      yarn global add --silent --no-progress --non-interactive "$pkg";
     fi
   done
 }
 
 #### GLOBAL: add degit + typescript support
-__global_add degit typescript ts-standard ts-node @types/node
+if [ ! -e "$(yarn global dir)/node_modules/@types/node" ]; then
+    yarn global add --silent --no-progress --non-interactive --no-bin-links @types/node
+fi
+__global_add pnpm @antfu/ni degit typescript ts-standard ts-node
 
 #### CONFIGURE  @antfu/ni 
 [ ! -f "$HOME/.nirc" ] \
   && echo -e "defaultAgent=${defaultAgent:-pnpm}\nglobalAgent=${globalAgent:-yarn}\n" > "$HOME/.nirc";
-
-__global_add pnpm @antfu/ni
 
 #### PROMPT_COMMAND: ensure __git_ps1 exists -> export 
 if ! which __git_ps1 > /dev/null; then

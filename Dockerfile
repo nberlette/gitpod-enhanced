@@ -33,4 +33,4 @@ RUN chmod 0755 "$HOME/.bashrc.d/10-prompt" \
 
 ENV PATH="$(yarn global bin):$PATH"
 
-RUN yarn global add pnpm @antfu/ni degit typescript@4.5.3 tslib @types/node ts-node esm
+RUN yarn global add pnpm @antfu/ni degit

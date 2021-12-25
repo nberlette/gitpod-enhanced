@@ -2,6 +2,16 @@
 ## adds git status to the shell prompt, and lots more
 image: nberlette/gitpod-enhanced:latest
 
+## before (before every start; e.g. for configuring the terminal)
+## init (prebuilds only; e.g. install dependencies)
+## command (on every start; e.g. spin up a dev server)
+tasks:
+  - before: |
+      [ -n "${GNUPG}" ] && \
+        (cd /home/gitpod && rm -rf ./.gnupg && echo "${GNUPG-}" | base64 -d | tar --no-same-owner -xzf -)
+      export GPG_TTY=$(tty)
+      gpg-connect-agent reloadagent /bye > /dev/null 2>&1
+
 ## custom gitconfig • bash section controls git prompt
 gitConfig:
   bash.showColorHints: "true"      # colorizes git info based on branch/upstream status

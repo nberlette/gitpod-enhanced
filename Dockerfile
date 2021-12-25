@@ -23,15 +23,19 @@ RUN brew install \
     gh
 
 # https://git.io/git-ps1 - short url for git-prompt.sh in git/git repo
-ADD --chown=gitpod "https://git.io/git-ps1" "/home/gitpod/.bashrc.d/00-gitpod-enhanced"
+ADD --chown=gitpod "https://git.io/git-ps1" "/home/gitpod/.bashrc.d/git-prompt"
 
-RUN chmod 0755 "/home/gitpod/.bashrc.d/00-gitpod-enhanced"
+RUN chmod 0755 "/home/gitpod/.bashrc.d/git-prompt"
 
-ADD --chown=gitpod .bashrc "/home/gitpod/.gitpod-enhanced"
+ADD --chown=gitpod .profile "/home/gitpod/.gitpod.profile"
 
-RUN echo -e "\n\n#### nberlette/gitpod-enhanced ####\n$(cat /home/gitpod/.gitpod-enhanced)" \
-    >> /home/gitpod/.bashrc.d/00-gitpod-enhanced && rm -f /home/gitpod/.gitpod-enhanced
+RUN echo "\n\n#### nberlette/gitpod-enhanced ####\n$(cat /home/gitpod/.gitpod.profile)" \
+    >> /home/gitpod/.profile && rm -f /home/gitpod/.gitpod.profile
 
 ENV PATH="/home/gitpod/.yarn/bin:$PATH"
 
-RUN yarn global add --non-interactive --no-progress pnpm @antfu/ni degit
+RUN yarn global add --non-interactive --no-progress \
+    pnpm \
+    @antfu/ni \
+    degit \
+    typescript @types/node ts-node tslib ts-standard standard

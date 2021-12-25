@@ -1,26 +1,37 @@
-image: 
-  file: Dockerfile
+## custom workspace image: @nberlette/gitpod-enhanced
+## adds git status to the shell prompt, and lots more
+image: nberlette/gitpod-enhanced:latest
+
+## custom gitconfig • bash section controls git prompt
+gitConfig:
+  bash.showColorHints: "true"      # colorizes git info based on branch/upstream status
+  bash.showUpstream: "auto"        # false | auto verbose name git svn (accepts > 1)
+  bash.showUntrackedFiles: "false" # % added if untracked files are detected
+  bash.showStashState: "true"      # $ added if stashed files are detected
+  bash.showDirtyState: "true"      # * added if tracked files are modified
+  bash.hideIfPwdIgnored: "false"   # hides git prompt if cwd is in .gitignore
+
+## vscode extensions to install in workspace
+vscode:
+  extensions:
+    - ms-azuretools.vscode-docker
+    - eamodio.gitlens
+    - esbenp.prettier-vscode
+    - dbaeumer.vscode-eslint
+    - christian-kohler.npm-intellisense
+    - eg2.vscode-npm-script
+
+## workspace port configs and how to handle when they open
 ports:
   - port: 3000 
     onOpen: notify
   - port: 5000
     onOpen: notify
+
+## github prebuilds preferences
 github:
   prebuilds:
+    # prebuild for all branches in the repository?
     branches: true
+    # add a gitpod label to commits after prebuild?
     addLabel: true
-gitConfig:
-  bash.showColorHints: "true"
-  bash.showUntrackedFiles: "true"
-  bash.showUpstream: "auto verbose name git"
-  bash.showStashState: "true"
-  bash.showDirtyState: "true"
-  bash.hidePwdIfIgnored: "true"
-vscode:
-  extensions:
-    - eamodio.gitlens
-    - esbenp.prettier-vscode
-    - dbaeumer.vscode-eslint
-    - christian-kohler.npm-intellisense
-    - ms-azuretools.vscode-docker
-

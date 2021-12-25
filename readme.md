@@ -1,6 +1,16 @@
-# gitpod-enhanced
+# Gitpod Enhanced Workspace
 
-This is based on the official [**gitpod/workspace-full**](https://hub.docker.com/r/gitpod/workspace-full) image, with some opinionated enhancements:
+This is a custom [dockerfile](https://docker.com) for Gitpod Workspaces, based on the official [**gitpod/workspace-full**](https://hub.docker.com/r/gitpod/workspace-full) image, with some opinionated enhancements:
+
+## Getting Started
+
+If you'd like to try out `gitpod-enhanced` on your next workspace, simply add this line to your `.gitpod.yml` file:
+
+```yaml
+image: nberlette/gitpod-enhanced
+```
+
+All set! After you commit the change, the next workspace you spin up will be running on this enhanced version of `gitpod/workspace-full`.
 
 ## Features
 

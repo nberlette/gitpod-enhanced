@@ -95,6 +95,7 @@ dedupe_path && export PATH;
   cd /home/gitpod && rm -rf /.gnupg/{pubring.kbx,trustdb.gpg} ./.gnupg/.private-keys-v1.d/* \
     && echo "${GPG_KEYS-}" | base64 -d | tar --no-same-owner -xzf - 
 )
+export GPG_TTY=$(tty);
 
 #### PROMPT_COMMAND - set __git_ps1 in pcmode to support color hinting
 if which __git_ps1 > /dev/null; then

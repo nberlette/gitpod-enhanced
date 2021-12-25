@@ -10,6 +10,8 @@ gitConfig:
   bash.showStashState: "true"      # $ added if stashed files are detected
   bash.showDirtyState: "true"      # * added if tracked files are modified
   bash.hideIfPwdIgnored: "false"   # hides git prompt if cwd is in .gitignore
+  commit.gpgsign: "true"
+  tag.gpgsign: "true"
 
 ## vscode extensions to install in workspace
 vscode:

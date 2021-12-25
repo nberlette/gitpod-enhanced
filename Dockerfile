@@ -26,7 +26,7 @@ RUN brew install fzf \
 
 # https://git.io/git-ps1 - short url for git-prompt.sh in git/git repo
 ADD --chown=gitpod "https://git.io/git-ps1" "$HOME/.bashrc.d/10-prompt"
-COPY .bash_profile "$HOME/.bashrc.d/20-profile"
+COPY .bashrc "$HOME/.bashrc.d/20-profile"
 
 RUN chmod 0755 "$HOME/.bashrc.d/10-prompt" \
  && chmod 0755 "$HOME/.bashrc.d/20-profile"

@@ -5,6 +5,21 @@
   "editor.formatOnPaste": true,
   "editor.formatOnType": true,
   "editor.formatOnSave": false,
-  "terminal.integrated.env.linux": {},
-  "git.enableCommitSigning": true
+  "terminal.integrated.env.linux": {
+    
+  },
+  "git.enableCommitSigning": false,
+  "terminal.integrated.defaultProfile.linux": "bash",
+  "terminal.integrated.profiles.linux": {
+    "bash": {
+      "path": "bash",
+      "icon": "terminal-bash"
+    },
+    "zsh": {
+      "path": "zsh"
+    },
+    "fish": {
+      "path": "fish"
+    }
+  }
 }

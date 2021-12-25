@@ -11,12 +11,12 @@ LABEL org.opencontainers.image.author="Nicholas Berlette <nick@berlette.com>"
 LABEL org.opencontainers.image.source="https://github.com/nberlette/gitpod-enhanced"
 LABEL org.opencontainers.image.licenses="MIT"
 
-USER gitpod
-
 RUN sudo apt-get -y update && sudo apt-get -y install \
     git-extras \
     neovim \
- && rm -rf /var/lib/apt/lists/*
+ && sudo rm -rf /var/lib/apt/lists/*
+
+USER gitpod
 
 RUN brew install \
     fzf \

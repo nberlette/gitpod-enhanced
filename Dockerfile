@@ -3,16 +3,16 @@
 ##              MIT © 2021 @nberlette                 ##
 ## -------------------------------------------------- ##
 
-FROM gitpod/workspace-base:latest
+FROM gitpod/workspace-full AS gp-full
 
-LABEL org.opencontainers.image.title="Gitpod Enhanced" 
+LABEL org.opencontainers.image.title="Gitpod Enhanced"
 LABEL org.opencontainers.image.description="An enhanced fork of Gitpod's workspace-full image."
 LABEL org.opencontainers.image.author="Nicholas Berlette <nick@berlette.com>"
 LABEL org.opencontainers.image.url="https://n.berlette.com/gitpod-enhanced"
 LABEL org.opencontainers.image.source="https://github.com/nberlette/gitpod-enhanced"
-LABEL org.opencontainers.image.licenses="MIT" 
+LABEL org.opencontainers.image.licenses="MIT"
 
-USER root 
+USER root
 
 RUN apt-get -y update && apt-get -y install \
     git-extras \

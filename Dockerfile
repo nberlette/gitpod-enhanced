@@ -3,34 +3,35 @@
 ##              MIT © 2021 @nberlette                 ##
 ## -------------------------------------------------- ##
 
-FROM gitpod/workspace-full AS gp-full
+FROM gitpod/workspace-full
 
 LABEL org.opencontainers.image.title="Gitpod Enhanced"
 LABEL org.opencontainers.image.description="An enhanced fork of Gitpod's workspace-full image."
 LABEL org.opencontainers.image.author="Nicholas Berlette <nick@berlette.com>"
-LABEL org.opencontainers.image.url="https://n.berlette.com/gitpod-enhanced"
 LABEL org.opencontainers.image.source="https://github.com/nberlette/gitpod-enhanced"
 LABEL org.opencontainers.image.licenses="MIT"
 
-USER root
+USER gitpod
 
-RUN apt-get -y update && apt-get -y install \
+RUN sudo apt-get -y update && sudo apt-get -y install \
     git-extras \
     neovim \
  && rm -rf /var/lib/apt/lists/*
 
-USER gitpod
-
-RUN brew install fzf \
- && brew install gh
+RUN brew install \
+    fzf \
+    gh
 
 # https://git.io/git-ps1 - short url for git-prompt.sh in git/git repo
-ADD --chown=gitpod "https://git.io/git-ps1" "$HOME/.bashrc.d/10-prompt"
-COPY .bashrc "$HOME/.bashrc.d/20-profile"
+ADD --chown=gitpod "https://git.io/git-ps1" "/home/gitpod/.bashrc.d/00-gitpod-enhanced"
 
-RUN chmod 0755 "$HOME/.bashrc.d/10-prompt" \
- && chmod 0755 "$HOME/.bashrc.d/20-profile"
+RUN chmod 0755 "/home/gitpod/.bashrc.d/00-gitpod-enhanced"
 
-ENV PATH="$(yarn global bin):$PATH"
+ADD --chown=gitpod .bashrc "/home/gitpod/.gitpod-enhanced"
 
-RUN yarn global add pnpm @antfu/ni degit
+RUN echo -e "\n\n#### nberlette/gitpod-enhanced ####\n$(cat /home/gitpod/.gitpod-enhanced)" \
+    >> /home/gitpod/.bashrc.d/00-gitpod-enhanced && rm -f /home/gitpod/.gitpod-enhanced
+
+ENV PATH="/home/gitpod/.yarn/bin:$PATH"
+
+RUN yarn global add --non-interactive --no-progress pnpm @antfu/ni degit

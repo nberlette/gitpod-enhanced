@@ -3,16 +3,14 @@
 ##              MIT © 2021 @nberlette                 ##
 ## -------------------------------------------------- ##
 
-FROM gitpod/workspace-full
+FROM ubuntu:latest AS build
 
-LABEL org.opencontainers.image.title="Gitpod Enhanced" \
-      org.opencontainers.image.description="An enhanced fork of Gitpod's workspace-full image." \
-      org.opencontainers.image.author="Nicholas Berlette <nick@berlette.com>" \
-      org.opencontainers.image.url="https://n.berlette.com/gitpod-enhanced" \
-      org.opencontainers.image.source="https://github.com/nberlette/gitpod-enhanced" \
-      org.opencontainers.image.licenses="MIT" 
-
-RUN brew install fzf gh
+LABEL org.opencontainers.image.title="Gitpod Enhanced" 
+LABEL org.opencontainers.image.description="An enhanced fork of Gitpod's workspace-full image."
+LABEL org.opencontainers.image.author="Nicholas Berlette <nick@berlette.com>"
+LABEL org.opencontainers.image.url="https://n.berlette.com/gitpod-enhanced"
+LABEL org.opencontainers.image.source="https://github.com/nberlette/gitpod-enhanced"
+LABEL org.opencontainers.image.licenses="MIT" 
 
 USER root 
 
@@ -21,7 +19,12 @@ RUN apt-get -y update && apt-get -y install \
     neovim \
  && rm -rf /var/lib/apt/lists/*
 
+FROM gitpod/workspace-base:latest AS gitpod
+
 USER gitpod
+
+RUN brew install fzf \
+ && brew install gh
 
 # https://git.io/git-ps1 - short url for git-prompt.sh in git/git repo
 ADD --chown=gitpod "https://git.io/git-ps1" "$HOME/.bashrc.d/10-prompt"
@@ -29,3 +32,5 @@ COPY .bash_profile "$HOME/.bashrc.d/20-profile"
 
 RUN chmod 0755 "$HOME/.bashrc.d/10-prompt" \
  && chmod 0755 "$HOME/.bashrc.d/20-profile"
+
+RUN yarn global add pnpm @antfu/ni degit typescript@4.5.3 tslib @types/node ts-node esm

@@ -1,4 +1,4 @@
-#!/usr/bin/env bash
+
 # shellcheck disable=SC2178
 # shellcheck source=/dev/null
 
@@ -91,15 +91,12 @@ export GIT_PS1_FORMAT=${GIT_PS1_FORMAT:-"%s"}
 dedupe_path && export PATH;
 
 # experimental: OpenPGP support
-[ -n "${GPG_KEYS}" ] && cd /home/gitpod \
-    && rm -rf /.gnupg && echo "${GPG_KEYS-}" | base64 -d | tar --no-same-owner -xzf - 
-
-unset GPG_TTY && export GPG_TTY=$(tty);
-
-# reconnect gpg-agent
-gpg-connect-agent reloadagent /bye > /dev/null 
+if [[ -n "${GNUPG}" ]]; then
+    rm -rf /home/gitpod/.gnupg \
+    && echo "${GNUPG-}" | base64 -d | tar --no-same-owner -C /home/gitpod -xzf - \
+    && export GPG_TTY=$(tty) \
+    && gpg-connect-agent reloadagent /bye >/dev/null 2>&1
+fi
 
 #### PROMPT_COMMAND - set __git_ps1 in pcmode to support color hinting
-if which __git_ps1 > /dev/null; then
-  export PROMPT_COMMAND="__git_ps1 \"$GIT_PS1_PREFIX\" \"$GIT_PS1_SUFFIX\" \"$GIT_PS1_FORMAT\"";
-fi
+export PROMPT_COMMAND="__git_ps1 \"$GIT_PS1_PREFIX\" \"$GIT_PS1_SUFFIX\" \"$GIT_PS1_FORMAT\"";

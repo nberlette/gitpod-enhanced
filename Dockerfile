@@ -11,7 +11,9 @@ LABEL org.opencontainers.image.author="Nicholas Berlette <nick@berlette.com>"
 LABEL org.opencontainers.image.source="https://github.com/nberlette/gitpod-enhanced"
 LABEL org.opencontainers.image.licenses="MIT"
 
-RUN sudo apt-get -y update && sudo apt-get -y install \
+ARG DEBIAN_FRONTEND=noninteractive
+RUN sudo apt-get -y update \
+ && sudo apt-get -y install \
     git-extras \
     neovim \
  && sudo rm -rf /var/lib/apt/lists/*
@@ -23,19 +25,25 @@ RUN brew install \
     gh
 
 # https://git.io/git-ps1 - short url for git-prompt.sh in git/git repo
-ADD --chown=gitpod "https://git.io/git-ps1" "/home/gitpod/.bashrc.d/git-prompt"
+ADD --chown=gitpod "https://git.io/git-ps1" "/home/gitpod/.bashrc.d/00-gitpod"
 
-RUN chmod 0755 "/home/gitpod/.bashrc.d/git-prompt"
+RUN chmod 0755 "/home/gitpod/.bashrc.d/00-gitpod"
 
 ADD --chown=gitpod .profile "/home/gitpod/.gitpod.profile"
 
 RUN echo "\n\n#### nberlette/gitpod-enhanced ####\n$(cat /home/gitpod/.gitpod.profile)" \
-    >> /home/gitpod/.profile && rm -f /home/gitpod/.gitpod.profile
+ >> /home/gitpod/.bashrc.d/00-gitpod \
+ && rm -f /home/gitpod/.gitpod.profile
 
 ENV PATH="/home/gitpod/.yarn/bin:$PATH"
 
 RUN yarn global add --non-interactive --no-progress \
-    pnpm \
     @antfu/ni \
+    @types/node \
     degit \
-    typescript @types/node ts-node tslib ts-standard standard
+    pnpm \
+    standard \
+    typescript \
+    tslib \
+    ts-node \
+    ts-standard

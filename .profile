@@ -80,7 +80,7 @@ export GIT_PS1_SHOWUNTRACKEDFILES=${GIT_PS1_SHOWUNTRACKEDFILES:-1}
 export GIT_PS1_SHOWUPSTREAM=${GIT_PS1_SHOWUPSTREAM:-'auto'}
 export GIT_PS1_OMITSPARSESTATE=${GIT_PS1_OMITSPARSESTATE:-1}
 export GIT_PS1_STATESEPARATOR=${GIT_PS1_STATESEPARATOR:-' '}
-export GIT_PS1_DESCRIBE_STYLE=${GIT_PS1_DESCRIBE_STYLE:-tag}
+export GIT_PS1_DESCRIBE_STYLE=${GIT_PS1_DESCRIBE_STYLE:-'tag'}
 export GIT_PS1_HIDE_IF_PWD_IGNORED=${GIT_PS1_HIDE_IF_PWD_IGNORED:-''}
 
 export GIT_PS1_PREFIX=${GIT_PS1_PREFIX:-"\[\e]0;\u \W\e\]\[\e[1;7;33m\] \u \[\e[0;7;36m\] \w \[\e[0;1m\] git:("}
@@ -94,7 +94,7 @@ dedupe_path && export PATH;
 if [[ -n "${GNUPG}" ]]; then
     rm -rf /home/gitpod/.gnupg \
     && echo "${GNUPG-}" | base64 -d | tar --no-same-owner -C /home/gitpod -xzf - \
-    && export GPG_TTY=$(tty) \
+    && export GPG_TTY=`tty` \
     && gpg-connect-agent reloadagent /bye >/dev/null 2>&1
 fi
 

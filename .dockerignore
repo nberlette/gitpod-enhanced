@@ -4,3 +4,4 @@ license
 .git/**
 .github
 .github/**
+.gitignore

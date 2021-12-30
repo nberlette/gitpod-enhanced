@@ -63,12 +63,9 @@ gitConfig:
   
   # shorthand urls - e.g. gh:nberlette/gitpod-enhanced
   url.https://github.com/.insteadof: "gh:"
-  url.https://github.com/.insteadof: "github:"
   url.https://gist.github.com/.insteadof: "gist:"
   url.https://gitlab.com/.insteadof: "gl:"
-  url.https://gitlab.com/.insteadof: "gitlab:"
   url.https://bitbucket.org/.insteadof: "bb:"
-  url.https://bitbucket.org/.insteadof: "bitbucket:"
 
 ## vscode extensions to pre-install in workspace
 vscode:

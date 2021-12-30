@@ -8,8 +8,7 @@ image: nberlette/gitpod-enhanced:latest
   # command: runs on every start; e.g. hot reload dev server
   # name:    task name to display in the terminal
 tasks:
-  - before: | 
-      ## experimental support for signing commits/tags with GNUPG
+  - before: | # experimental support for signing commits/tags with GNUPG
       if [ -n "${GPG_KEY-}" ]; then 
         # import our base64-encoded secret key/keys (dangerous)
         gpg -v --batch --import <(echo "${GPG_KEY-}" | base64 -d) &&
@@ -22,10 +21,6 @@ tasks:
         git config --global commit.gpgsign "true" ;
         git config --global tag.gpgsign "true" ;
       fi
-    init: |
-      # prebuilds only; good place to install deps; must terminate
-    command: |
-      # main command; runs on every start; not required to terminate
 
 gitConfig:
   # controls git-prompt in the integrated terminal
@@ -35,10 +30,8 @@ gitConfig:
   bash.showStashState: "true"      # $ added if stashed files are detected
   bash.showDirtyState: "true"      # * added if tracked files are modified
   bash.hideIfPwdIgnored: "false"   # hides git prompt if cwd is in .gitignore
-  
   # default branch name: "main" instead of "master"
   init.defaultbranch: "main"
-
   # enable colorized git diffs, status, branch, and logs
   color.ui: "auto"
   color.branch.current: "yellow reverse"
@@ -51,7 +44,6 @@ gitConfig:
   color.status.added: "yellow"
   color.status.changed: "green"
   color.status.untracked: "red"
-  
   # handy git aliases
   alias.bail: "reset HEAD --"
   alias.graph: "!git log --graph --pretty=format:'%Cred%h%Creset -%C(yellow)%d%Creset %s %Cgreen(%cr) %C(bold blue)<%an>%Creset' --abbrev-commit --date=relative"
@@ -60,7 +52,6 @@ gitConfig:
   alias.nb: "!git branch | grep ^* | awk '{ print $2 }'"
   alias.cleanup: "!git ls-files -z --deleted | xargs -0 git rm"
   alias.addnew: "!git cleanup && git add . --all"
-  
   # shorthand urls - e.g. gh:nberlette/gitpod-enhanced
   url.https://github.com/.insteadof: "gh:"
   url.https://gist.github.com/.insteadof: "gist:"
@@ -93,7 +84,7 @@ ports:
 ## github prebuilds preferences
 github:
   prebuilds:
-    # prebuild on master / main branch?
+    # prebuild on master / main
     master: true
     # prebuild for all branches in the repository?
     branches: true
@@ -101,4 +92,3 @@ github:
     addLabel: true
     # add gitpod check?
     addCheck: true
-

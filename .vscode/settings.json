@@ -6,9 +6,9 @@
   "editor.formatOnType": true,
   "editor.formatOnSave": false,
   "terminal.integrated.env.linux": {
-    
+    "GIT_PS1_SHOWUPSTREAM": ""
   },
-  "git.enableCommitSigning": false,
+  "git.enableCommitSigning": true,
   "terminal.integrated.defaultProfile.linux": "bash",
   "terminal.integrated.profiles.linux": {
     "bash": {

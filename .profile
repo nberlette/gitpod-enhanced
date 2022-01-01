@@ -44,7 +44,7 @@ function __gpg_vscode () {
     if ! test -e "$SETTINGS_JSON"; then echo "{}" > "$SETTINGS_JSON" ; fi
 
     # use jq to edit .vscode/settings.json, enable pgp signing
-    NEW_JSON=$(jq '.git.enableCommitSigning="true" | .' "$SETTINGS_JSON")
+    NEW_JSON=$(jq '.["git.enableCommitSigning"]="true" | .' "$SETTINGS_JSON")
     echo "$NEW_JSON" > "$SETTINGS_JSON" || return 1;
 }
 

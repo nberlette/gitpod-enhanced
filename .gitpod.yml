@@ -2,25 +2,14 @@
 ## instead of pointing to our Dockerfile, point to the published image:tag
 image: nberlette/gitpod-enhanced:latest
 
-## workspace task definitions. allowed properties for each entry:
+## tasks
   # before:  runs on every start; e.g. terminal configurations
   # init:    runs on prebuilds only; e.g. install dependencies
   # command: runs on every start; e.g. hot reload dev server
   # name:    task name to display in the terminal
-tasks:
-  - before: | # experimental support for signing commits/tags with GNUPG
-      if [ -n "${GPG_KEY-}" ]; then 
-        # import our base64-encoded secret key/keys (dangerous)
-        gpg -v --batch --import <(echo "${GPG_KEY-}" | base64 -d) &&
-          echo 'pinentry-mode loopback' >> ~/.gnupg/gpg.conf ;
-        [ -z "${GPG_TTY-}" ] && export GPG_TTY=$(tty);
-        # set default key in gitconfig (optional, convenience)
-        [ -n "${GPG_KEY_ID-}" ] && 
-          git config --global user.signingkey "${GPG_KEY_ID-}" ;
-        # enable signing for commits and tags by default
-        git config --global commit.gpgsign "true" ;
-        git config --global tag.gpgsign "true" ;
-      fi
+#
+# tasks:
+#   - before: #...
 
 gitConfig:
   # controls git-prompt in the integrated terminal

@@ -15,22 +15,25 @@ image: nberlette/gitpod-enhanced
 
 ## Features
 
-### Integrated Terminal
+### Git Enhancements
 
-- Displays git info with `git-prompt.sh` ([from official git repo](https://github.com/git/git/raw/master/contrib/completion/git-prompt.sh))
-- Installs sensible defaults for `ls`, `diff`, `grep` - all with `color` enabled!
+- Displays git info with ([`git-prompt.sh` from official git repo](https://git.io/git-ps1))
 - [GitHub CLI](https://cli.github.com), [`git-extras`](https://github.com/tj/git-extras), `fzf`, and `neovim`
-- [`pnpm`](https://npm.im/pnpm), [`degit`](https://npm.im/degit), and [`@antfu/ni`](https://npm.im/@antfu/ni) for dead-simple package management
-- Includes [`typescript`](https://typescriptlang.org), [`ts-node`](https://npm.im/ts-node), [`ts-standard`](https://npm.im/ts-standard), and more
-- Prepends `yarn global bin` into the `$PATH`... (e.g. use `next` instead of `npx next`!)
+- [GPG support](#gpg-support) for PGP-signing commits (with VSCode integration)
+
+### Package Management
+
+- [`pnpm`](https://npm.im/pnpm), [`degit`](https://npm.im/degit), [`@antfu/ni`](https://npm.im/@antfu/ni) for simple package management
+- [`typescript`](https://typescriptlang.org), [`ts-node`](https://npm.im/ts-node), [`ts-standard`](https://npm.im/ts-standard)
+- `yarn global bin` prepended to the `$PATH` (e.g. allows command `next` instead of `npx next`!)
+
+### Other terminal addons
+
+- Installs sensible defaults for `ls`, `diff`, `grep` - all with `color`!
 - Bundled with many useful aliases, tools, and various other functional upgrades
 - Removes duplicate entries from `$PATH` variable ;)
 
-### Todo
-
-- Secure solution for PGP-signing commits from Gitpod
-
----  
+---
 
 ## Configuration
 
@@ -71,7 +74,7 @@ gp env GIT_PS1_PREFIX "\[\e[1m\] \w \[\e[0m\] ... " && eval $(gp env -e)
 
 ### Overrides
 
-You may change/remove any of these (with scope!) in **Dashboard > Settings > Variables**.  
+You may change/remove any of these (with scope!) in **Dashboard > Settings > Variables**.
 
 #### `.vscode/settings.json`
 
@@ -94,10 +97,39 @@ gitConfig:
   bash.hideIfPwdIgnored: "false"
 ```
 
-
 Note: only ***some*** of the variables have an equivalent `git config` value, which allows you to override them on a per-repository level, right from the `.gitpod.yml` configuration file.
 
----  
+---
+
+## Additional Features
+
+### GPG Support
+
+I've recently included (experimental) support for GPG commit signatures, via the command line or Visual Studio Code UI.
+
+If you create a new PGP key within a Gitpod workspace using the GitHub CLI (`gh`), it's pretty straightforward:
+
+```bash
+# find <key-id>
+gpg --list-secret-keys
+
+# save as GPG_KEY_ID
+GPG_KEY_ID="<key-id>"
+
+# export to gitpod
+gp env GPG_KEY "$(gpg --export-secret-keys $GPG_KEY_ID | base64 -w 0)"
+
+# saves key-id
+gp env GPG_KEY_ID $GPG_KEY_ID
+
+# export (update) all gp env vars to current workspace
+eval "$(gp env -e)"
+
+# source our .bashrc file for changes to take effect
+source ~/.bashrc
+```
+
+---
 
 ### License
 

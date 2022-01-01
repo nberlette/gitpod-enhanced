@@ -1,4 +1,4 @@
-
+# shellcheck shell=bash
 # shellcheck disable=SC2178
 # shellcheck source=/dev/null
 
@@ -15,9 +15,10 @@ function set_var () {
 }
 
 function dedupe_path () {
-    local pathvar_name="${1:-PATH}"
-    local pathvar_value="$(get_var "$pathvar_name")"
-    local deduped_path="$(perl -e 'print join(":",grep { not $seen{$_}++ } split(/:/, $ARGV[0]))' "$pathvar_value")"
+    local pathvar_name pathvar_value deduped_path
+    pathvar_name="${1:-PATH}"
+    pathvar_value="$(get_var "$pathvar_name")"
+    deduped_path="$(perl -e 'print join(":",grep { not $seen{$_}++ } split(/:/, $ARGV[0]))' "$pathvar_value")"
     set_var "$pathvar_name" "$deduped_path"
 }
 
@@ -31,17 +32,20 @@ function __gpg_gitconfig () {
     git config --global tag.gpgsign "true" ;
 }
 
+# shellcheck disable=SC2125
 function __gpg_vscode () {
+    local VSCODE SETTINGS_JSON NEW_JSON
     # ensure a .vscode folder exists
-    local VSCODE=/workspace/*/.vscode
-    if ! test -d $VSCODE; then mkdir -p $VSCODE; fi
+    VSCODE="$THEIA_WORKSPACE_ROOT/.vscode"
+    if ! test -d "$VSCODE"; then mkdir -p "$VSCODE"; fi
 
     # ensure a valid settings.json file exists
-    local SETTINGS_JSON=$VSCODE/settings.json
-    if ! test -e $SETTINGS_JSON; then echo "{}" > $SETTINGS_JSON ; fi
+    SETTINGS_JSON="$VSCODE/settings.json"
+    if ! test -e "$SETTINGS_JSON"; then echo "{}" > "$SETTINGS_JSON" ; fi
 
     # use jq to edit .vscode/settings.json, enable pgp signing
-    echo "$(jq '.git.enableCommitSigning="true" | .' $SETTINGS_JSON 2>/dev/null)" > $SETTINGS_JSON || return 1;
+    NEW_JSON=$(jq '.git.enableCommitSigning="true" | .' "$SETTINGS_JSON")
+    echo "$NEW_JSON" > "$SETTINGS_JSON" || return 1;
 }
 
 function __gpg_init () {
@@ -133,8 +137,8 @@ dedupe_path PATH && export PATH;
 
 ## initialize our gpg configuration (experimental)
 if [[ -n "${GPG_KEY-}" && "${GPG_CONFIGURED-}X" == "X" ]]; then
-    export GPG_TTY=$(tty) ;
-    __gpg_init ;
+    GPG_TTY=$(tty) && export GPG_TTY ;
+    __gpg_init 
 fi
 
 #### PROMPT_COMMAND - set __git_ps1 in pcmode to support color hinting

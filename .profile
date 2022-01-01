@@ -5,17 +5,57 @@
 #################################
 #### FUNCTIONS
 #################################
-get_var () {
+function get_var () {
     eval 'printf "%s\n" "${'"$1"'}"'
 }
-set_var () {
+
+function set_var () {
     eval "$1=\"\$2\""
 }
-dedupe_path () {
+
+function dedupe_path () {
     local pathvar_name="${1:-PATH}"
     local pathvar_value="$(get_var "$pathvar_name")"
     local deduped_path="$(perl -e 'print join(":",grep { not $seen{$_}++ } split(/:/, $ARGV[0]))' "$pathvar_value")"
     set_var "$pathvar_name" "$deduped_path"
+}
+
+#### experimental GNUPG (PGP) support
+function __gpg_gitconfig () {
+    # set default key in gitconfig (optional)
+    [ -n "${GPG_KEY_ID-}" ] && git config --global user.signingkey "${GPG_KEY_ID-}" ;
+
+    # enable signing for commits and tags by default
+    git config --global commit.gpgsign "true" ;
+    git config --global tag.gpgsign "true" ;
+}
+
+function __gpg_vscode () {
+    # ensure a .vscode folder exists
+    local VSCODE=/workspace/*/.vscode
+    if ! test -d $VSCODE; then mkdir -p $VSCODE; fi
+
+    # ensure a valid settings.json file exists
+    local SETTINGS_JSON=$VSCODE/settings.json
+    if ! test -e $SETTINGS_JSON; then echo "{}" > $SETTINGS_JSON ; fi
+
+    # use jq to edit .vscode/settings.json, enable pgp signing
+    echo "$(jq '.git.enableCommitSigning="true" | .' $SETTINGS_JSON 2>/dev/null)" > $SETTINGS_JSON || return 1;
+}
+
+function __gpg_init () {
+    unset GPG_CONFIGURED;
+    # import our base64-encoded secret key/keys (dangerous)
+    gpg --batch --import <(echo "${GPG_KEY-}" | base64 -d) &&
+        echo 'pinentry-mode loopback' >> "$HOME/.gnupg/gpg.conf" ;
+    # reload gpg-agent
+    gpg-connect-agent reloadagent /bye > /dev/null 2>&1 ;
+    # set gitconfig values for gpg signatures
+    __gpg_gitconfig
+    # change vscode settings for git commit signing
+    __gpg_vscode
+
+    export GPG_CONFIGURED=1
 }
 
 #################################
@@ -27,15 +67,15 @@ alias pip=pip3
 alias python=python3
 alias ls='ls -HLAhk --color=always'
 alias l='ls -st'
-alias la='ls -st'
+alias la='ls -stF'
 alias ll='ls -stFlog'
 
 alias diff='diff --side-by-side --color=always'
 alias dir='dir --color=auto'
 
 alias grep='grep --color=always'
-alias fgrep='grep -f --color=always'
-alias egrep='grep -E --color=always'
+alias fgrep='grep --color=always -f'
+alias egrep='grep --color=always -E'
 
 ## Linux-specific date/time shorthands
 alias _date_R="date +%R"
@@ -73,7 +113,6 @@ alias ingore='git ignore'
 #### Localization
 export TZ=${TZ:-'America/Los_Angeles'}
 
-#### TODO: #1 write documentation on available options and how to customize
 export GIT_PS1_SHOWCOLORHINTS=${GIT_PS1_SHOWCOLORHINTS:-1}
 export GIT_PS1_SHOWDIRTYSTATE=${GIT_PS1_SHOWDIRTYSTATE:-1}
 export GIT_PS1_SHOWSTASHSTATE=${GIT_PS1_SHOWSTASHSTATE:-1}
@@ -91,48 +130,8 @@ export GIT_PS1_FORMAT=${GIT_PS1_FORMAT:-" %s "}
 #### dedupe our path
 dedupe_path PATH && export PATH;
 
-#### experimental GNUPG (PGP) support
-function __gpg_gitconfig () {
-    # set default key in gitconfig (optional)
-    [ -n "${GPG_KEY_ID-}" ] && git config --global user.signingkey "${GPG_KEY_ID-}" ;
-
-    # enable signing for commits and tags by default
-    git config --global commit.gpgsign "true" ;
-    git config --global tag.gpgsign "true" ;
-}
-
-function __gpg_vscode () {
-    # ensure a settings.json folder exists
-    local VSCODE=/workspace/*/.vscode
-    local SETTINGS_JSON=$VSCODE/settings.json
-    if ! test -e $SETTINGS_JSON; then
-        mkdir -p $VSCODE && echo "{}" > $SETTINGS_JSON ;
-    fi
-    # use jq to edit .vscode/settings.json, enable pgp signing
-    echo "$(jq '.git.enableCommitSigning="true" | .' $SETTINGS_JSON 2>/dev/null)" > $SETTINGS_JSON || return 1;
-}
-
-function __gpg_init () {
-    unset GPG_CONFIGURED;
-
-    # import our base64-encoded secret key/keys (dangerous)
-    gpg --batch --import <(echo "${GPG_KEY-}" | base64 -d) &&
-        echo 'pinentry-mode loopback' >> "$HOME/.gnupg/gpg.conf" ;
-
-    # reload gpg-agent
-    gpg-connect-agent reloadagent /bye > /dev/null 2>&1 ;
-
-    # set gitconfig values for gpg signatures
-    __gpg_gitconfig
-
-    # change vscode settings for git commit signing
-    __gpg_vscode
-
-    export GPG_CONFIGURED=1
-}
-
-## initialize our gpg configuration
-if [[ -n "${GPG_KEY-}" && "${GPG_CONFIGURED}X" == "X" ]]; then
+## initialize our gpg configuration (experimental)
+if [[ -n "${GPG_KEY-}" && "${GPG_CONFIGURED-}X" == "X" ]]; then
     export GPG_TTY=$(tty) ;
     __gpg_init ;
 fi

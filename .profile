@@ -50,13 +50,17 @@ function __gpg_vscode () {
 
 function __gpg_init () {
     unset GPG_CONFIGURED;
+
     # import our base64-encoded secret key/keys (dangerous)
     gpg --batch --import <(echo "${GPG_KEY-}" | base64 -d) &&
         echo 'pinentry-mode loopback' >> "$HOME/.gnupg/gpg.conf" ;
+
     # reload gpg-agent
     gpg-connect-agent reloadagent /bye > /dev/null 2>&1 ;
+
     # set gitconfig values for gpg signatures
     __gpg_gitconfig
+
     # change vscode settings for git commit signing
     __gpg_vscode
 

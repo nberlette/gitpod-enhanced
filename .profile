@@ -36,7 +36,7 @@ function __gpg_gitconfig () {
 function __gpg_vscode () {
     local VSCODE SETTINGS_JSON NEW_JSON
     # ensure a .vscode folder exists
-    VSCODE="$THEIA_WORKSPACE_ROOT/.vscode"
+    VSCODE="${THEIA_WORKSPACE_ROOT:-/workspace/*}/.vscode"
     if ! test -d "$VSCODE"; then mkdir -p "$VSCODE"; fi
 
     # ensure a valid settings.json file exists
@@ -44,7 +44,7 @@ function __gpg_vscode () {
     if ! test -e "$SETTINGS_JSON"; then echo "{}" > "$SETTINGS_JSON" ; fi
 
     # use jq to edit .vscode/settings.json, enable pgp signing
-    NEW_JSON=$(jq '.["git.enableCommitSigning"]="true" | .' "$SETTINGS_JSON")
+    NEW_JSON=$(jq '.["git.enableCommitSigning"]=true | .' "$SETTINGS_JSON")
     echo "$NEW_JSON" > "$SETTINGS_JSON" || return 1;
 }
 
@@ -142,7 +142,7 @@ dedupe_path PATH && export PATH;
 ## initialize our gpg configuration (experimental)
 if [[ -n "${GPG_KEY-}" && "${GPG_CONFIGURED-}X" == "X" ]]; then
     GPG_TTY=$(tty) && export GPG_TTY ;
-    __gpg_init 
+    __gpg_init
 fi
 
 #### PROMPT_COMMAND - set __git_ps1 in pcmode to support color hinting

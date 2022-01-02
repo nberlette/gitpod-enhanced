@@ -50,21 +50,20 @@ function __gpg_vscode () {
 
 function __gpg_init () {
     unset GPG_CONFIGURED;
-
+    echo 'pinentry-mode loopback' >> "$HOME/.gnupg/gpg.conf" ;
     # import our base64-encoded secret key/keys (dangerous)
-    gpg --batch --import <(echo "${GPG_KEY-}" | base64 -d) &&
-        echo 'pinentry-mode loopback' >> "$HOME/.gnupg/gpg.conf" ;
+    gpg --batch --import <(echo "${GPG_KEY-}" | base64 -d) > /dev/null 2>&1 ;
 
     # reload gpg-agent
-    gpg-connect-agent reloadagent /bye > /dev/null 2>&1 ;
+    gpg-connect-agent reloadagent /bye> /dev/null 2>&1 ;
 
     # set gitconfig values for gpg signatures
-    __gpg_gitconfig
+    __gpg_gitconfig ;
 
     # change vscode settings for git commit signing
-    __gpg_vscode
+    __gpg_vscode ;
 
-    export GPG_CONFIGURED=1
+    export GPG_CONFIGURED=1 ;
 }
 
 #################################
@@ -137,12 +136,14 @@ export GIT_PS1_SUFFIX=${GIT_PS1_SUFFIX:-"\n\[\e[1;32;6m\]\$\[\e[0m\] "}
 export GIT_PS1_FORMAT=${GIT_PS1_FORMAT:-" %s "}
 
 #### dedupe our path
-dedupe_path PATH && export PATH;
+dedupe_path PATH;
+export PATH;
 
 ## initialize our gpg configuration (experimental)
 if [[ -n "${GPG_KEY-}" && "${GPG_CONFIGURED-}X" == "X" ]]; then
-    GPG_TTY=$(tty) && export GPG_TTY ;
-    __gpg_init
+    GPG_TTY=$(tty) ;
+    export GPG_TTY ;
+        __gpg_init ;
 fi
 
 #### PROMPT_COMMAND - set __git_ps1 in pcmode to support color hinting

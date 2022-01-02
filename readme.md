@@ -110,20 +110,17 @@ I've recently included (experimental) support for GPG commit signatures, via the
 If you create a new PGP key within a Gitpod workspace using the GitHub CLI (`gh`), it's pretty straightforward:
 
 ```bash
-# find <key-id>
-gpg --list-secret-keys
+# find <key-id> using gpg (or in output of `gh keys`)
+gpg --list-secret-keys --keyid-format LONG
 
-# save as GPG_KEY_ID
+# save as $GPG_KEY_ID
 GPG_KEY_ID="<key-id>"
 
 # export to gitpod
-gp env GPG_KEY "$(gpg --export-secret-keys $GPG_KEY_ID | base64 -w 0)"
+gp env GPG_KEY=$(gpg --export-secret-keys $GPG_KEY_ID | base64 -w 0)
 
-# saves key-id
-gp env GPG_KEY_ID $GPG_KEY_ID
-
-# export (update) all gp env vars to current workspace
-eval "$(gp env -e)"
+# saves key-id; exports all gp vars to current workspace
+eval $(gp env -e GPG_KEY_ID=$GPG_KEY_ID)
 
 # source our .bashrc file for changes to take effect
 source ~/.bashrc
@@ -133,4 +130,4 @@ source ~/.bashrc
 
 ### License
 
-[MIT](https://mit-license.org) © 2021 [Nicholas Berlette](https://github.com/nberlette) • all rights reserved
+[MIT](https://mit-license.org) © 2022 [Nicholas Berlette](https://github.com/nberlette) • all rights reserved

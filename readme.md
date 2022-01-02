@@ -33,75 +33,11 @@ image: nberlette/gitpod-enhanced
 - Bundled with many useful aliases, tools, and various other functional upgrades
 - Removes duplicate entries from `$PATH` variable ;)
 
----
+---  
 
 ## Configuration
 
-### Git Prompt
-
-The `GIT_PS1_` environment variables control the functions and display of the git-integrated shell prompt.
-
-These are the currently available options and their default:
-
-```bash
-GIT_PS1_SHOWCOLORHINTS="1"
-GIT_PS1_SHOWDIRTYSTATE="1"
-GIT_PS1_SHOWSTASHSTATE=""
-GIT_PS1_SHOWUNTRACKEDFILES=""
-GIT_PS1_SHOWUPSTREAM="auto"
-GIT_PS1_OMITSPARSESTATE="1"
-GIT_PS1_STATESEPARATOR=""
-GIT_PS1_DESCRIBE_STYLE="tag"
-GIT_PS1_HIDE_IF_PWD_IGNORED="1"
-```
----
-
-### Formatting `PS1`
-
-```bash
-GIT_PS1_PREFIX="\[\e]0;\u \W\e\]\[\e[1;7;33m\] \u \[\e[0;7;36m\] \w \[\e[0;1m\] git:("
-GIT_PS1_SUFFIX="\[\e[1m\])\[\e[0m\]\n\[\e[1;32;6m\]\$\[\e[0m\] "
-GIT_PS1_FORMAT="%s"
-```
-
-The last three options are `GIT_PS1_PREFIX`, `GIT_PS1_SUFFIX`, `GIT_PS1_FORMAT`. These allow you to change the colors and format of the surrounding `PS1` prompt string. They have no `git config` equivalent, and must be set in `settings.json`, the Gitpod Dashboard, or through the command `gp env` in the terminal:
-
-```bash
-gp env GIT_PS1_PREFIX "\[\e[1m\] \w \[\e[0m\] ... " && eval $(gp env -e)
-```
-
----
-
-### Overrides
-
-You may change/remove any of these (with scope!) in **Dashboard > Settings > Variables**.
-
-#### `.vscode/settings.json`
-
-```jsonc
-// .vscode/settings.json
-{
-  "terminal.integrated.env.linux": {
-    "GIT_PS1_SHOWUPSTREAM": "auto verbose name",
-    "GIT_PS1_SHOWUNTRACKEDFILES": ""
-  }
-}
-```
-
-#### `.gitpod.yml`
-
-```yaml
-# .gitpod.yml
-gitConfig:
-  bash.showUpstream: "false"
-  bash.hideIfPwdIgnored: "false"
-```
-
-Note: only ***some*** of the variables have an equivalent `git config` value, which allows you to override them on a per-repository level, right from the `.gitpod.yml` configuration file.
-
----
-
-## Additional Features
+This is a cursory overview of some of the configuration options. For more detailed explanation of builtin workspace features, see the [Gitpod documentation](https://gitpod.io/docs/configuration.html).
 
 ### GPG Support
 
@@ -128,6 +64,67 @@ source ~/.bashrc
 
 ---
 
-### License
+### Formatting `PS1` and `GIT_PS1`
 
-[MIT](https://mit-license.org) © 2022 [Nicholas Berlette](https://github.com/nberlette) • all rights reserved
+The `GIT_PS1_` environment variables control the functions and display of the git-integrated shell prompt.
+
+These are the currently available options and their default:
+
+```bash
+GIT_PS1_SHOWCOLORHINTS="1"
+GIT_PS1_SHOWDIRTYSTATE="1"
+GIT_PS1_SHOWSTASHSTATE=""
+GIT_PS1_SHOWUNTRACKEDFILES=""
+GIT_PS1_SHOWUPSTREAM="auto"
+GIT_PS1_OMITSPARSESTATE="1"
+GIT_PS1_STATESEPARATOR=""
+GIT_PS1_DESCRIBE_STYLE="tag"
+GIT_PS1_HIDE_IF_PWD_IGNORED="1"
+```
+
+The last three options are `GIT_PS1_PREFIX`, `GIT_PS1_SUFFIX`, `GIT_PS1_FORMAT`. 
+These allow you to change the colors and format of the surrounding `PS1` prompt string. 
+
+```bash
+GIT_PS1_PREFIX="\[\e]0;\u \W\e\]\[\e[1;7;33m\] \u \[\e[0;7;36m\] \w \[\e[0;1m\] git:("
+GIT_PS1_SUFFIX="\[\e[1m\])\[\e[0m\]\n\[\e[1;32;6m\]\$\[\e[0m\] "
+GIT_PS1_FORMAT="%s"
+```
+
+They have no `git config` equivalent, and must be set in `settings.json`, the Gitpod Dashboard, or through the command `gp env` in the terminal:
+
+```bash
+eval $(gp env -e GIT_PS1_PREFIX="\[\e[1m\] \w \[\e[0m\] ... ")
+```
+
+---
+
+> You may change/remove any of these (with scope!) in **Dashboard > Settings > Variables**.
+
+#### Override with `.vscode/settings.json`
+
+```jsonc
+// .vscode/settings.json
+{
+  "terminal.integrated.env.linux": {
+    "GIT_PS1_SHOWUPSTREAM": "auto verbose name",
+    "GIT_PS1_SHOWUNTRACKEDFILES": ""
+  }
+}
+```
+
+#### Override with `.gitpod.yml`
+
+```yaml
+# .gitpod.yml
+gitConfig:
+  bash.showUpstream: "false"
+  bash.hideIfPwdIgnored: "false"
+```
+
+Note: only ***some*** of the variables have an equivalent `git config` value, which allows you to override them on a per-repository level, right from the `.gitpod.yml` configuration file.
+
+---
+## License
+
+[MIT](https://mit-license.org) © 2021 [Nicholas Berlette](https://github.com/nberlette) • all rights reserved

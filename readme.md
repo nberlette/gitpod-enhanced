@@ -1,5 +1,6 @@
-
-# `gitpod-enhanced`
+<h1 align=center>
+  <a href="https://github.com/nberlette/gitpod-enhanced"><code>gitpod-enhanced</code></a>
+</h1>
 
 Turbocharged [Gitpod.io](https://gitpod.io) [workspace image](https://hub.docker.com/r/nberlette/gitpod-enhanced) (built on-top of the official [**gitpod/workspace-full**](https://hub.docker.com/r/gitpod/workspace-full)) with some tasteful enhancements to improve developer experience.
 
@@ -10,6 +11,8 @@ Add this line to your `.gitpod.yml` file to start using `gitpod-enhanced`:
 ```yaml
 image: nberlette/gitpod-enhanced
 ```
+
+[![Open in Gitpod](https://gitpod.io/button/open-in-gitpod.svg)](https://gitpod.io/#https://github.com/nberlette/gitpod-enhanced)
 
 ---
 
@@ -125,6 +128,19 @@ gitConfig:
 Note: only ***some*** of the variables have an equivalent `git config` value, which allows you to override them on a per-repository level, right from the `.gitpod.yml` configuration file.
 
 ---
+
+## Contributing
+
+Community contributions are paramount to the success of Open Source projects such as this, and maintainers like me rely on people like you to help keep the code alive. **You are more than welcome** to make any contributions, and I highly encourage you to make a pull request - regardless of whether you're adding, editing, or deleting code. It's all welcome here.
+
+## Guidelines and Code of Conduct
+
+Please [read the guidelines for contributing](./.github/CONTRIBUTING.md), as well as our [community code of conduct](./.github/CODE_OF_CONDUCT.md) before you make any contributions. Once you feel familiar with them, if you have any questions just [open an issue](./issues) or contact me directly!
+
+Thanks!
+
+---
+
 ## License
 
-[MIT](https://mit-license.org) © 2021 [Nicholas Berlette](https://github.com/nberlette) • all rights reserved
+[MIT](https://mit-license.org) © 2022 [Nicholas Berlette](https://github.com/nberlette) • all rights reserved

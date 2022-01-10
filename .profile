@@ -34,41 +34,71 @@ function __gpg_gitconfig () {
 
 # shellcheck disable=SC2125
 function __gpg_vscode () {
-    local VSCODE SETTINGS_JSON NEW_JSON
+    local VSCODE SETTINGS_JSON
     # ensure a .vscode folder exists
     VSCODE="${THEIA_WORKSPACE_ROOT:-/workspace/*}/.vscode"
-    if ! test -d "$VSCODE"; then mkdir -p "$VSCODE"; fi
+    [ -d "$VSCODE" ] || mkdir -p "$VSCODE"; 
 
     # ensure a valid settings.json file exists
     SETTINGS_JSON="$VSCODE/settings.json"
-    if ! test -e "$SETTINGS_JSON"; then echo "{}" > "$SETTINGS_JSON" ; fi
+    [ -f "$SETTINGS_JSON" ] || echo "{}" > "$SETTINGS_JSON" ;
 
     # use jq to edit .vscode/settings.json, enable pgp signing
-    NEW_JSON=$(jq '.["git.enableCommitSigning"]=true | .' "$SETTINGS_JSON")
-    echo "$NEW_JSON" > "$SETTINGS_JSON" || return 1;
+    # shellcheck disable=SC2005
+    echo "$(jq '.["git.enableCommitSigning"]=true | .' "$SETTINGS_JSON")" > "$SETTINGS_JSON" || return 1;
 }
 
 function __gpg_init () {
     unset GPG_CONFIGURED;
-    echo 'pinentry-mode loopback' >> "$HOME/.gnupg/gpg.conf" ;
+    local PINENTRY_CONF GPG_CONF
+    PINENTRY_CONF='pinentry-mode loopback'
+    GPG_CONF="$HOME/.gnupg/gpg.conf" ;
+    
+    if ! grep -q "$PINENTRY_CONF" "$GPG_CONF"; then
+        echo "$PINENTRY_CONF" >> "$GPG_CONF"
+    fi
+
     # import our base64-encoded secret key/keys (dangerous)
     gpg --batch --import <(echo "${GPG_KEY-}" | base64 -d) > /dev/null 2>&1 ;
 
-    # reload gpg-agent
-    gpg-connect-agent reloadagent /bye> /dev/null 2>&1 ;
-
-    # set gitconfig values for gpg signatures
+    # setup gitconfig and vscode settings for gpg signatures
     __gpg_gitconfig ;
-
-    # change vscode settings for git commit signing
     __gpg_vscode ;
 
+    # reload gpg-agent
+    gpg-connect-agent reloadagent /bye > /dev/null 2>&1 ;
+
     export GPG_CONFIGURED=1 ;
+}
+
+# TODO: #6 implement SSH-key integration at runtime
+function __ssh_init () {
+    if [ -n "$SSH_KEY" ]; then 
+        
+        return 0;
+    fi
+    return 1;
+}
+
+#### Authenticate GitHub CLI on start if a PAT ($GITHUB_TOKEN) exists in Gitpod
+# TODO: #7 [feature] convert gh auth login to dotfiles (.config/gh)
+function __gh_login () {
+    local __GH_TOKEN
+    if [ -n "$GITHUB_TOKEN" ]; then
+        if which gh > /dev/null 2>&1; then
+            # GitHub CLI doesn't allow us to authenticate if $GITHUB_TOKEN is also in use.
+            __GH_TOKEN=${GITHUB_TOKEN-} && unset GITHUB_TOKEN;
+            # shellcheck disable=SC2059
+            echo -n "${__GH_TOKEN-}" | gh auth login --with-token > /dev/null 2>&1 || return 1;
+            return 0;
+        fi
+    fi
 }
 
 #################################
 #### ALIASES
 #################################
+
 alias c=clear
 alias pip2=pip
 alias pip=pip3
@@ -121,6 +151,7 @@ alias ingore='git ignore'
 #### Localization
 export TZ=${TZ:-'America/Los_Angeles'}
 
+# TODO: #8 refactor method for checking/setting GIT_PS1_* defaults
 export GIT_PS1_SHOWCOLORHINTS=${GIT_PS1_SHOWCOLORHINTS:-1}
 export GIT_PS1_SHOWDIRTYSTATE=${GIT_PS1_SHOWDIRTYSTATE:-1}
 export GIT_PS1_SHOWSTASHSTATE=${GIT_PS1_SHOWSTASHSTATE:-1}
@@ -131,20 +162,27 @@ export GIT_PS1_STATESEPARATOR=${GIT_PS1_STATESEPARATOR:-' '}
 export GIT_PS1_DESCRIBE_STYLE=${GIT_PS1_DESCRIBE_STYLE:-'tag'}
 export GIT_PS1_HIDE_IF_PWD_IGNORED=${GIT_PS1_HIDE_IF_PWD_IGNORED:-''}
 
-export GIT_PS1_PREFIX=${GIT_PS1_PREFIX:-"\[\e]0;\u \W\e\]\[\e[1;7;33m\] \u \[\e[0;7;36m\] \w \[\e[0;1m\]"}
+export GIT_PS1_PREFIX=${GIT_PS1_PREFIX:-"\[\e]0;\u \W\e\]\[\e[0m\e[7;36m\]\[\e[0;36;7m\] \W \[\e[0;36m\]\[\e[0;1m\]"}
 export GIT_PS1_SUFFIX=${GIT_PS1_SUFFIX:-"\n\[\e[1;32;6m\]\$\[\e[0m\] "}
 export GIT_PS1_FORMAT=${GIT_PS1_FORMAT:-" %s "}
 
-#### dedupe our path
-dedupe_path PATH;
-export PATH;
+dedupe_path PATH && export PATH;
 
-## initialize our gpg configuration (experimental)
-if [[ -n "${GPG_KEY-}" && "${GPG_CONFIGURED-}X" == "X" ]]; then
-    GPG_TTY=$(tty) ;
-    export GPG_TTY ;
-        __gpg_init ;
+## TODO: #5 fix gpg failure error on first start, temporary fix by calling __gpg_unlock
+if [[ -n "${GPG_KEY-}" && "${GPG_CONFIGURED-}" != "1" ]]; then
+    # shellcheck disable=SC2155    
+    export GPG_TTY=$(tty);
+    __gpg_init ;
+fi
+
+## TODO: experimental ssh configuration
+if [[ -n "${SSH_KEY-}" && "${SSH_CONFIGURED-}" != "1" ]]; then
+    __ssh_init ;
+fi
+
+if [[ -n "${GITHUB_TOKEN-}" ]]; then
+    __gh_login ;
 fi
 
 #### PROMPT_COMMAND - set __git_ps1 in pcmode to support color hinting
-export PROMPT_COMMAND="__git_ps1 \"$GIT_PS1_PREFIX\" \"$GIT_PS1_SUFFIX\" \"$GIT_PS1_FORMAT\"";
+export PROMPT_COMMAND="__git_ps1 \"${GIT_PS1_PREFIX-}\" \"${GIT_PS1_SUFFIX-}\" \"${GIT_PS1_FORMAT:- %s }\"";

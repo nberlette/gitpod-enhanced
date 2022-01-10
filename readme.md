@@ -1,5 +1,5 @@
 <h1 align=center>
-  <a href="https://github.com/nberlette/gitpod-enhanced"><code>gitpod-enhanced</code></a>
+  <a href="https://github.com/nberlette/gitpod-enhanced"><code>gitpod-enhanced</code></a><br>
   <a href="https://gitpod.io/#https://github.com/nberlette/gitpod-enhanced" target="_blank" title="Open in Gitpod: Ready to Code"><img src="https://img.shields.io/badge/Gitpod-ready--to--code-blue.svg?logo=gitpod" alt="Open in Gitpod: Ready to Code" /></a>
   <a href="https://github.com/nberlette/gitpod-enhanced/actions/workflows/docker-release.yml" title="CI Build Status: Docker Image"><img src="https://github.com/nberlette/gitpod-enhanced/actions/workflows/docker-release.yml/badge.svg?branch=main" alt="CI/CD Status: Docker Image" /></a>
 </h1>
@@ -42,7 +42,27 @@ image: nberlette/gitpod-enhanced
 
 ## Configuration
 
-This is a cursory overview of some of the configuration options. For more detailed explanation of builtin workspace features, see the [Gitpod documentation](https://gitpod.io/docs/configuration.html).
+This is a cursory overview of some of the configuration options. For more detailed explanation of builtin workspace features, see the [Gitpod documentation](https://gitpod.io/docs/configuration.html).  
+
+---  
+### GitHub CLI Authentication
+
+I'm currently working (on minimal bandwidth) to integrate the newly-released `dotfiles` support with gitpod-enhanced, which will allow for a lot more streamlined configuration for settings such as this.
+
+Until then, however, we have only the finest of janky solutions!
+
+```bash
+GITHUB_TOKEN="ghp_2ed23idj023ijmdjqkfewjdsnfe"
+
+# set with gitpod's CLI:
+eval $(gp env -e GITHUB_TOKEN=$GITHUB_TOKEN)
+```
+
+Setting the $GITHUB_TOKEN variable with a properly-scoped PAT (personal access token), will direct `gitpod-enhanced` to automatically authenticate your account with the GitHub CLI.  
+
+This means you'll be able to use the full list of features as soon as you fire up your workspaces!  
+
+---  
 
 ### GPG Support
 
@@ -106,7 +126,7 @@ eval $(gp env -e GIT_PS1_PREFIX="\[\e[1m\] \w \[\e[0m\] ... ")
 
 > You may change/remove any of these (with scope!) in **Dashboard > Settings > Variables**.
 
-#### Override with `.vscode/settings.json`
+### Override via `.vscode/settings.json`
 
 ```jsonc
 // .vscode/settings.json
@@ -118,7 +138,9 @@ eval $(gp env -e GIT_PS1_PREFIX="\[\e[1m\] \w \[\e[0m\] ... ")
 }
 ```
 
-#### Override with `.gitpod.yml`
+---  
+
+### Override via `.gitpod.yml`
 
 ```yaml
 # .gitpod.yml
@@ -130,6 +152,8 @@ gitConfig:
 Note: only ***some*** of the variables have an equivalent `git config` value, which allows you to override them on a per-repository level, right from the `.gitpod.yml` configuration file.
 
 ---
+
+---  
 
 ## Contributing
 

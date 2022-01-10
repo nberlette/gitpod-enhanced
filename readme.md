@@ -1,5 +1,7 @@
 <h1 align=center>
   <a href="https://github.com/nberlette/gitpod-enhanced"><code>gitpod-enhanced</code></a>
+  <a href="https://gitpod.io/#https://github.com/nberlette/gitpod-enhanced" target="_blank" title="Open in Gitpod: Ready to Code"><img src="https://img.shields.io/badge/Gitpod-ready--to--code-blue.svg?logo=gitpod" alt="Open in Gitpod: Ready to Code" /></a>
+  <a href="https://github.com/nberlette/gitpod-enhanced/actions/workflows/docker-release.yml" title="CI Build Status: Docker Image"><img src="https://github.com/nberlette/gitpod-enhanced/actions/workflows/docker-release.yml/badge.svg?branch=main" alt="CI/CD Status: Docker Image" /></a>
 </h1>
 
 Turbocharged [Gitpod.io](https://gitpod.io) [workspace image](https://hub.docker.com/r/nberlette/gitpod-enhanced) (built on-top of the official [**gitpod/workspace-full**](https://hub.docker.com/r/gitpod/workspace-full)) with some tasteful enhancements to improve developer experience.

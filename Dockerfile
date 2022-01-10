@@ -20,10 +20,7 @@ RUN sudo apt-get -y update \
 
 USER gitpod
 
-RUN brew update \
- && brew install \
-    fzf \
-    gh
+RUN brew update && brew install fzf gh
 
 # https://git.io/git-ps1 - short url for git-prompt.sh in git/git repo
 ADD --chown=gitpod "https://git.io/git-ps1" "/home/gitpod/.bashrc.d/00-gitpod"
@@ -41,9 +38,11 @@ RUN yarn global add --non-interactive --no-progress \
     @antfu/ni \
     @types/node \
     degit \
+    esm \
     pnpm \
     standard \
     typescript \
     tslib \
+    tsm \
     ts-node \
     ts-standard

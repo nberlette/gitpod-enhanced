@@ -53,8 +53,10 @@ function __gpg_init () {
     local PINENTRY_CONF GPG_CONF
     PINENTRY_CONF='pinentry-mode loopback'
     GPG_CONF="$HOME/.gnupg/gpg.conf" ;
+
+    touch "$GPG_CONF";
     
-    if ! grep -q "$PINENTRY_CONF" "$GPG_CONF"; then
+    if ! grep -q "$PINENTRY_CONF" "$GPG_CONF" > /dev/null 2>&1; then
         echo "$PINENTRY_CONF" >> "$GPG_CONF"
     fi
 

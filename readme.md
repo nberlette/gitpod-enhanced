@@ -1,20 +1,28 @@
-<h1 align=center>
-  <a href="https://github.com/nberlette/gitpod-enhanced"><code>gitpod-enhanced</code></a><br>
-  <a href="https://gitpod.io/#https://github.com/nberlette/gitpod-enhanced" target="_blank" title="Open in Gitpod: Ready to Code"><img src="https://img.shields.io/badge/Gitpod-ready--to--code-blue.svg?logo=gitpod" alt="Open in Gitpod: Ready to Code" /></a>
-  <a href="https://github.com/nberlette/gitpod-enhanced/actions/workflows/docker-release.yml" title="CI Build Status: Docker Image"><img src="https://github.com/nberlette/gitpod-enhanced/actions/workflows/docker-release.yml/badge.svg?branch=main" alt="CI/CD Status: Docker Image" /></a>
-</h1>
+<h1 align="center"><a href="https://github.com/nberlette/gitpod-enhanced"><code>gitpod-enhanced</code></a></h1>
+<div align="center">
+  <a href="https://gitpod.io/#https://github.com/nberlette/gitpod-enhanced" target="_blank" title="Open in Gitpod: Ready to Code"><img src="https://img.shields.io/badge/Prebuild-READY%20%E2%86%97-brightgreen.svg?logo=gitpod&style=for-the-badge" alt="Open in Gitpod: Ready to Code" /></a>
+  <a href="https://github.com/nberlette/gitpod-enhanced/actions/workflows/docker-release.yml" title="CI Build Status: Docker Image"><img alt="GitHub Workflow Status" src="https://img.shields.io/github/workflow/status/nberlette/gitpod-enhanced/Release%20Docker%20Image?label=Build&logo=docker&style=for-the-badge"></a>
+  <img src="https://img.shields.io/badge/Bash-gray.svg?logo=gnubash&logoColor=white&style=for-the-badge" alt="GNU Bash: Bourne Again Shell" />
+  <img src="https://img.shields.io/badge/PNPM-gray.svg?logo=pnpm&logoColor=white&style=for-the-badge" alt="PNPM: Performant Node Package Management" />
+  <img src="https://img.shields.io/badge/TypeScript-gray.svg?logo=typescript&logoColor=white&style=for-the-badge" alt="PNPM: Performant Node Package Management" />
+</div><br>
+<div align="center">
 
 Turbocharged [Gitpod.io](https://gitpod.io) [workspace image](https://hub.docker.com/r/nberlette/gitpod-enhanced) (built on-top of the official [**gitpod/workspace-full**](https://hub.docker.com/r/gitpod/workspace-full)) with some tasteful enhancements to improve developer experience.
 
+</div>
+
+
+---  
+
 ## Getting Started
 
-Add this line to your `.gitpod.yml` file to start using `gitpod-enhanced`:
-
 ```yaml
+# add to .gitpod.yml
+
 image: nberlette/gitpod-enhanced
 ```
 
-[![Open in Gitpod](https://gitpod.io/button/open-in-gitpod.svg)](https://gitpod.io/#https://github.com/nberlette/gitpod-enhanced)
 
 ---
 
@@ -34,17 +42,17 @@ image: nberlette/gitpod-enhanced
 
 ### Other terminal addons
 
-- Installs sensible defaults for `ls`, `diff`, `grep` - all with `color`!
+- Installs sensible defaults for `ls`, `diff`, `grep` - all with `color`
 - Bundled with many useful aliases, tools, and various other functional upgrades
-- Removes duplicate entries from `$PATH` variable ;)
+- Removes duplicate entries from `$PATH` variable
 
 ---  
 
 ## Configuration
 
-This is a cursory overview of some of the configuration options. For more detailed explanation of builtin workspace features, see the [Gitpod documentation](https://gitpod.io/docs/configuration.html).  
+> For more details on builtin workspace features, see the [Gitpod documentation](https://gitpod.io/docs/configuration.html).  
 
----  
+
 ### GitHub CLI Authentication
 
 I'm currently working (on minimal bandwidth) to integrate the newly-released `dotfiles` support with gitpod-enhanced, which will allow for a lot more streamlined configuration for settings such as this.
@@ -153,17 +161,16 @@ Note: only ***some*** of the variables have an equivalent `git config` value, wh
 
 ---
 
----  
 
 ## Contributing
 
 Community contributions are paramount to the success of Open Source projects such as this, and maintainers like me rely on people like you to help keep the code alive. **You are more than welcome** to make any contributions, and I highly encourage you to make a pull request - regardless of whether you're adding, editing, or deleting code. It's all welcome here.
 
-## Guidelines and Code of Conduct
+---  
 
-Please [read the guidelines for contributing](./.github/CONTRIBUTING.md), as well as our [community code of conduct](./.github/CODE_OF_CONDUCT.md) before you make any contributions. Once you feel familiar with them, if you have any questions just [open an issue](./issues) or contact me directly!
+## Code of Conduct
 
-Thanks!
+Please [read the guidelines for contributing](./.github/CONTRIBUTING.md), as well as our [community code of conduct](./.github/CODE_OF_CONDUCT.md) before you make any contributions. Once you feel familiar with them, if you have any questions just [open an issue](./issues) or contact me.
 
 ---
 

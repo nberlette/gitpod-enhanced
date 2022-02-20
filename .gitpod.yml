@@ -6,13 +6,19 @@ image: nberlette/gitpod-enhanced:latest
 # command: runs on every start; e.g. hot reload dev server
 # name:    task name to display in the terminal
 
+tasks:
+  - name: "Task Info"
+    before: printf "\e[1;34;4m%s\e[0m\n\e[2;3m%s\e[0m\n\n" "tasks.[].before" "- runs on every start, before init or command\n- for manipulating state not shared across tasks\n- must terminate without error to proceed (exit 0)\n- intended only for non-interactive processes\n- this is a good place to install local dependencies"
+    init: printf "\e[1;33;4m%s\e[0m\n\e[2;3m%s\e[0m\n\n" "tasks.[].init" "- runs only on prebuilds and coldstarts\n- must terminate successfully to proceed (exit 0)\n- intended only for non-interactive processes\n- this is a good place to config/install your tooling"
+    command: printf "\e[1;32;4m%s\e[0m\n\e[2;3m%s\e[0m\n\n" "tasks.[].command" "- runs on every start as the tasks main command\n- allowed to run a non-terminating (interactive) process\n- this is a good place to run your Dev Server"
+
 gitConfig:
-  bash.showColorHints: "true"      # colorizes git info based on branch/upstream status
-  bash.showUpstream: "auto"        # false | auto verbose name git svn (accepts > 1)
-  bash.showUntrackedFiles: "false" # % added if untracked files are detected
-  bash.showStashState: "true"      # $ added if stashed files are detected
-  bash.showDirtyState: "true"      # * added if tracked files are modified
-  bash.hideIfPwdIgnored: "false"   # hides git prompt if cwd is in .gitignore
+  bash.showColorHints: "true"
+  bash.showUpstream: "auto"
+  bash.showUntrackedFiles: "false"
+  bash.showStashState: "true"
+  bash.showDirtyState: "true"
+  bash.hideIfPwdIgnored: "false"
   init.defaultbranch: "main"
   color.ui: "auto"
   color.branch.current: "yellow reverse"
@@ -37,39 +43,38 @@ gitConfig:
   url.https://gitlab.com/.insteadof: "gl:"
   url.https://bitbucket.org/.insteadof: "bb:"
 
-## vscode extensions to pre-install in workspace
+
 vscode:
   extensions:
+    - github.copilot-nightly
     - ms-azuretools.vscode-docker
     - eamodio.gitlens
     - esbenp.prettier-vscode
     - dbaeumer.vscode-eslint
     - christian-kohler.npm-intellisense
     - christian-kohler.path-intellisense
-    - gamunu.vscode-yarn
     - eg2.vscode-npm-script
+    - Jacano.vscode-pnpm
+    - gamunu.vscode-yarn
     - timonwong.shellcheck
+    - foxundermoon.shell-format
     - mads-hartmann.bash-ide-vscode
     - redhat.vscode-yaml
     - vsls-contrib.gitdoc
+    - robertz.code-snapshot
+    - ms-vscode.cmake-tools
 
-## workspace ports and how to handle them upon opening
 ports:
-  - port: 3000           # can also be a range, e.g. 3000-3333
-    onOpen: open-browser # ignore | notify | open-preview | open-browser
-    visibility: private  # public | private
-  - port: 5000
-    onOpen: notify
-    visibility: public
+  - port: 3000-5000
+    onOpen: open-browser
+    visibility: private
 
-## github prebuilds preferences
 github:
   prebuilds:
-    # prebuild on master / main
     master: true
-# prebuild for all branches in the repository?
     branches: true
-# add a gitpod label to commits after prebuild?
     addLabel: true
-# add gitpod check?
     addCheck: true
+    addBadge: true
+    pullRequests: true
+    pullRequestsFromForks: false

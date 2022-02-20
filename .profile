@@ -1,10 +1,16 @@
+#!/usr/bin/env bash
+###############################################################################
+##                            ~ GITPOD-ENHANCED ~                            ##
+####          Turbocharged Development Image for Gitpod Workspaces         ####
+###############################################################################
+#####  MIT License (c) 2022+ Nicholas Berlette - <https://git.io/gitpod>  #####
+###############################################################################
+
 # shellcheck shell=bash
-# shellcheck disable=SC2178
+# shellcheck disable=SC2178,SC2125,SC2059,SC2155,SC2086
 # shellcheck source=/dev/null
 
-#################################
-#### FUNCTIONS
-#################################
+#### FUNCTIONS #################################################################
 
 function get_var () {
     eval 'printf "%s\n" "${'"$1"'}"'
@@ -32,11 +38,10 @@ function __gpg_gitconfig () {
     git config --global tag.gpgsign "true" ;
 }
 
-# shellcheck disable=SC2125
 function __gpg_vscode () {
     local VSCODE SETTINGS_JSON
     # ensure a .vscode folder exists
-    VSCODE="${THEIA_WORKSPACE_ROOT:-/workspace/*}/.vscode"
+    VSCODE="/workspace/.vscode-remote"
     [ -d "$VSCODE" ] || mkdir -p "$VSCODE"; 
 
     # ensure a valid settings.json file exists
@@ -76,7 +81,6 @@ function __gpg_init () {
 # TODO: #6 implement SSH-key integration at runtime
 function __ssh_init () {
     if [ -n "$SSH_KEY" ]; then 
-        
         return 0;
     fi
     return 1;
@@ -86,105 +90,108 @@ function __ssh_init () {
 # TODO: #7 [feature] convert gh auth login to dotfiles (.config/gh)
 function __gh_login () {
     local __GH_TOKEN
-    if [ -n "$GITHUB_TOKEN" ]; then
-        if which gh > /dev/null 2>&1; then
-            # GitHub CLI doesn't allow us to authenticate if $GITHUB_TOKEN is also in use.
-            __GH_TOKEN=${GITHUB_TOKEN-} && unset GITHUB_TOKEN;
-            # shellcheck disable=SC2059
-            echo -n "${__GH_TOKEN-}" | gh auth login --with-token > /dev/null 2>&1 || return 1;
-            return 0;
-        fi
+    if [ -n "$GITHUB_TOKEN" ] && which gh > /dev/null 2>&1; then
+        # GitHub CLI doesn't authenticate if $GITHUB_TOKEN is in use.
+        # so we copy to a local variable and unset the global one. (janky)
+        __GH_TOKEN=${GITHUB_TOKEN-} && unset GITHUB_TOKEN;
+        # now we login with $__GH_TOKEN and error out on failure
+        echo -n "${__GH_TOKEN-}" | 
+            gh auth login --with-token 2>/dev/null && return 0;
+        # still here? stop script, bad login
+        return 1;
     fi
 }
 
-#################################
-#### ALIASES
-#################################
+## xpm: cross-package-manager
+## uses pnpm, if available, and falls back to npm if not.
+function xpm () {
+    # if we don't have pnpm, let's get it
+    if ! which pnpm > /dev/null 2>&1; then
+        if which curl > /dev/null 2>&1; then
+            curl -fsSL https://get.pnpm.io/install.sh | bash - > /dev/null 2>&1;
+        else
+            wget -qO- https://get.pnpm.io/install.sh | bash - > /dev/null 2>&1;
+        fi
+        xpm "$@";
+    fi
+    pnpm "$@" || npm "$@";
+}
 
-alias c=clear
-alias pip2=pip
-alias pip=pip3
-alias python=python3
-alias ls='ls -HLAhk --color=always'
-alias l='ls -st'
-alias la='ls -stF'
-alias ll='ls -stFlog'
+function __vercel () {
+	local GLOBAL_CFG LOCAL_CFG __VC_CFG __VC_FLAGS
+    # global vercel config (directory)
+	GLOBAL_CFG=/workspace/.vercel
+	LOCAL_CFG="${THEIA_WORKSPACE_ROOT-}/vercel.json";
+	__VC_CFG="${GLOBAL_CFG:+"${GLOBAL_CFG-}/project.json"}";
+	__VC_FLAGS=""
 
-alias diff='diff --side-by-side --color=always'
-alias dir='dir --color=auto'
+    if [[ "${1-}" == "login" ]]; then
+        __VC_FLAGS+=" --oob";
+    fi
 
-alias grep='grep --color=always'
-alias fgrep='grep --color=always -f'
-alias egrep='grep --color=always -E'
+    [ -n "${VERCEL_FLAGS-}" ] && __VC_FLAGS+=" ${VERCEL_FLAGS-}";
+    [ -n "${VERCEL_TOKEN-}" ] && __VC_FLAGS+=" --token=${VERCEL_TOKEN-}";
 
-## Linux-specific date/time shorthands
-alias _date_R="date +%R"
-alias _date_D="date +%D"
-alias _date_F="date +%F"
-alias _time_iso="date -Iseconds"
-alias _timestamp="date +%s"
-alias _unix="date +%s"
-alias _epoch="date +%s"
+    if [ -n "${GLOBAL_CFG-}" ]; then
+        # shellcheck disable=SC2174
+		[ -d "${GLOBAL_CFG-}" ] || mkdir -p -m 0755 "${GLOBAL_CFG-}" ;
+        __VC_FLAGS+=" --global-config=${GLOBAL_CFG-}";
+    fi
 
-## clear and list files at once
-alias cls='clear && ls'
-alias cll='clear && ll'
-alias cla='clear && la'
-alias cl='clear && l'
+    if [ -n "${LOCAL_CFG-}" ] && [ -f "${LOCAL_CFG-}" ]; then
+        __VC_FLAGS+=" --local-config=${LOCAL_CFG-}";
+    fi
 
-alias mv='mv -v'
-alias rm='rm -v -i'
-alias mkdir='mkdir -p'
-alias ..="cd .."
-alias cd..='cd ..'
-alias t='touch'
+    __VC_FLAGS="$(echo "${__VC_FLAGS-}" | sed -e 's/^ *//' -e 's/ *$//')";
+    eval "$(which vercel) ${__VC_FLAGS-} ${*}" && return 0;
+    return 1;
+}
 
-## common typos
-alias gitignore='git ignore'
-alias ignore='git ignore'
-alias gitingore='git ignore'
-alias ingore='git ignore'
+## Vercel CLI Auto-Authentication
+alias vercel="__vercel"
+alias vc="__vercel"
+
+function __path () {
+    local NODE_V=$(node -v 2>/dev/null);
+	local DEFAULT_PATH="/home/gitpod/.nix-profile/bin:/home/gitpod/.pyenv/plugins/pyenv-virtualenv/shims:/home/gitpod/.nix-profile/bin:/home/gitpod/.sdkman/candidates/maven/current/bin:/home/gitpod/.sdkman/candidates/java/current/bin:/home/gitpod/.sdkman/candidates/gradle/current/bin:/home/gitpod/.pyenv/plugins/pyenv-virtualenv/shims:/home/gitpod/.rvm/gems/default/bin:/home/gitpod/.rvm/rubies/default/bin:/ide/bin/remote-cli:/home/gitpod/.yarn/bin:/workspace/.cargo/bin:/workspace/.rvm/bin:/workspace/.pip-modules/bin:/home/gitpod/.pyenv/bin:/home/gitpod/.pyenv/shims:/workspace/go/bin:/home/gitpod/go/bin:/home/gitpod/go-packages/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/home/linuxbrew/.linuxbrew/bin:/home/linuxbrew/.linuxbrew/sbin/:/home/gitpod/.nvm/versions/node/${NODE_V:-v16.13.0}/bin:/home/gitpod/.cargo/bin:/usr/games:/home/gitpod/.rvm/bin:/home/gitpod/.nvm/versions/node/${NODE_V:-v16.13.0}/bin";
+	# DEFAULT_PATH="$(dedupe_path DEFAULT_PATH)"
+	PATH=${PATH:-$DEFAULT_PATH};
+	if which yarn > /dev/null 2>&1; then
+		PATH="$(yarn global bin):$(yarn global dir)/node_modules/.bin:$PATH";
+	fi
+	if which pnpm > /dev/null 2>&1; then 
+		PATH="$(pnpm -g bin 2>/dev/null):$PATH";
+    fi
+	if which dedupe_path > /dev/null 2>&1; then 
+		dedupe_path PATH; 
+	fi
+	export PATH="$PATH";
+}
 
 
-#################################
-#### PROFILE.SH - DEFAULTS
-#################################
+#### EXPORTS ##################################################################
 
-#### Localization
 export TZ=${TZ:-'America/Los_Angeles'}
 
-# TODO: #8 refactor method for checking/setting GIT_PS1_* defaults
-export GIT_PS1_SHOWCOLORHINTS=${GIT_PS1_SHOWCOLORHINTS:-1}
-export GIT_PS1_SHOWDIRTYSTATE=${GIT_PS1_SHOWDIRTYSTATE:-1}
-export GIT_PS1_SHOWSTASHSTATE=${GIT_PS1_SHOWSTASHSTATE:-1}
-export GIT_PS1_SHOWUNTRACKEDFILES=${GIT_PS1_SHOWUNTRACKEDFILES:-1}
-export GIT_PS1_SHOWUPSTREAM=${GIT_PS1_SHOWUPSTREAM:-'auto'}
-export GIT_PS1_OMITSPARSESTATE=${GIT_PS1_OMITSPARSESTATE:-1}
-export GIT_PS1_STATESEPARATOR=${GIT_PS1_STATESEPARATOR:-' '}
-export GIT_PS1_DESCRIBE_STYLE=${GIT_PS1_DESCRIBE_STYLE:-'tag'}
-export GIT_PS1_HIDE_IF_PWD_IGNORED=${GIT_PS1_HIDE_IF_PWD_IGNORED:-''}
+## Remove dupes from our $PATH var
+dedupe_path PATH;
+export PATH;
 
-export GIT_PS1_PREFIX=${GIT_PS1_PREFIX:-"\[\e]0;\u \W\e\]\[\e[0m\e[7;36m\]\[\e[0;36;7m\] \W \[\e[0;36m\]\[\e[0;1m\]"}
-export GIT_PS1_SUFFIX=${GIT_PS1_SUFFIX:-"\n\[\e[1;32;6m\]\$\[\e[0m\] "}
-export GIT_PS1_FORMAT=${GIT_PS1_FORMAT:-" %s "}
+export GPG_TTY=$(tty);
 
-dedupe_path PATH && export PATH;
-
-## TODO: #5 fix gpg failure error on first start, temporary fix by calling __gpg_unlock
-if [[ -n "${GPG_KEY-}" && "${GPG_CONFIGURED-}" != "1" ]]; then
-    # shellcheck disable=SC2155    
-    export GPG_TTY=$(tty);
+## TODO: GPG auto-configuration
+[ -n "${GPG_KEY-}" ] && [ $GPG_CONFIGURED != 1 ] && 
     __gpg_init ;
-fi
 
-## TODO: experimental ssh configuration
-if [[ -n "${SSH_KEY-}" && "${SSH_CONFIGURED-}" != "1" ]]; then
+## TODO: SSH auto-configuration
+[ -n "${SSH_KEY-}" ] && [ $SSH_CONFIGURED != 1 ] && 
     __ssh_init ;
-fi
 
-if [[ -n "${GITHUB_TOKEN-}" ]]; then
+## GitHub CLI Auto-Authentication
+[ -n "${GITHUB_TOKEN-}" ] &&
     __gh_login ;
-fi
+
+## TODO: Wrangler CLI Auto-Authentication
 
 #### PROMPT_COMMAND - set __git_ps1 in pcmode to support color hinting
-export PROMPT_COMMAND="__git_ps1 \"${GIT_PS1_PREFIX-}\" \"${GIT_PS1_SUFFIX-}\" \"${GIT_PS1_FORMAT:- %s }\"";
+export PROMPT_COMMAND="__git_ps1 \"\${?} ${GIT_PS1_PREFIX-}\" \"${GIT_PS1_SUFFIX-}\" \"${GIT_PS1_FORMAT:- %s }\"";

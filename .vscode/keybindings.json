@@ -1,0 +1,90 @@
+/**
+ * Gitpod Remote Extension Keybindings (custom)
+ * @license MIT (c) Nicholas Berlette <https://git.io/gitpod>
+ */
+[
+  // Shift + Cmd + G -- S
+  // Share Snapshot of Workspace
+  {
+    "key": "shift+cmd+g s",
+    "command": "gitpod.takeSnapshot"
+  }, 
+   // Cmd + G -- T
+  // Extend Timeout 
+  {
+    "key": "cmd+g t",
+    "command": "gitpod.ExtendTimeout"
+  },
+  // Cmd + G -- C
+  // Open Context of Workspace (Source Repo/Commit/Branch)
+  {
+    "key": "cmd+g c",
+    "command": "gitpod.open.context"
+  },
+  // Cmd + G -- D
+  // Opens <https://gitpod.io/dashboard> in browser
+  {
+    "key": "cmd+g d",
+    "command": "gitpod.open.dashboard"
+  },
+  // Cmd + G -- H
+  // Opens <https://gitpod.io/docs> in browser
+  {
+    "key": "cmd+g h",
+    "command": "gitpod.open.documentation"
+  },
+  // Cmd + G -- ,
+  // Open Settings
+  {
+    "key": "cmd+g ,",
+    "command": "gitpod.open.settings"
+  },
+  // Cmd + G -- O
+  // Open Workspace in Gitpod Browser IDE
+  {
+    "key": "cmd+g o",
+    "command": "gitpod.openInBrowser"
+  },
+  // Cmd + G -- V
+  // Open in VSCode Stable (desktop)
+  {
+    "key": "cmd+g v",
+    "command": "gitpod.openInStable"
+  },
+  // Cmd + G -- I
+  // Open in VSCode Insiders (desktop)
+  {
+    "key": "cmd+g i",
+    "command": "gitpod.openInInsiders"
+  },
+  // Cmd + G -- A
+  // Open Access Control
+  {
+    "key": "cmd+g a",
+    "command": "gitpod.open.accessControl"
+  },
+  // Cmd + G -- S
+  // Share Running Workspace
+  {
+    "key": "cmd+g s",
+    "command": "gitpod.shareWorkspace"
+  },
+  // Cmd + G -- Q
+  // Stop Sharing Running Workspace
+  {
+    "key": "cmd+g q",
+    "command": "gitpod.stopSharingWorkspace"
+  },
+  // Cmd + G -- Cmd + Q
+  // Stop Running Workspace (`gp stop` in terminal)
+  {
+    "key": "cmd+g cmd+q",
+    "command": "gitpod.stop.ws"
+  },
+  // Cmd + G -- R
+  // Report Issue
+  {
+    "key": "cmd+g r",
+    "command": "gitpod.reportIssue"
+  }
+]

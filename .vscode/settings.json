@@ -1,40 +1,54 @@
 {
-  "gitlens.showWelcomeOnInstall": false,
-  "editor.defaultFormatter": "esbenp.prettier-vscode",
-  "editor.bracketPairColorization.enabled": true,
-  "editor.formatOnPaste": true,
-  "editor.formatOnType": true,
-  "editor.formatOnSave": false,
-  "terminal.integrated.env.linux": {
-    "GIT_PS1_SHOWUPSTREAM": "auto",
-    "GIT_PS1_SHOWCOLORHINTS": "true",
-    "GIT_PS1_SHOWDIRTYSTATE": "true",
-    "GIT_PS1_SHOWUNTRACKEDFILES": "true",
-    "GIT_PS1_SHOWSTASHSTATE": "true",
-    "GIT_PS1_PREFIX": "\\[\\e]0;\\u \\W\\e\\] \\T \\[\\e[0m\\e[7;36m\\]\\[\\e[0;36;7m\\] \\W \\[\\e[0;36m\\]\\[\\e[0;1m\\]",
-    "GIT_PS1_SUFFIX": "\\n\\[\\e[1;32;6m\\]\\$\\[\\e[0m\\] ",
-    "GIT_PS1_FORMAT": "  %s ",
+  // johnpapa.peacock
+  "workbench.colorCustomizations": {
+    "activityBar.activeBackground": "#e95eb4",
+    "activityBar.activeBorder": "#a4e43b",
+    "activityBar.background": "#e95eb4",
+    "activityBar.foreground": "#15202b",
+    "activityBar.inactiveForeground": "#15202b99",
+    "activityBarBadge.background": "#a4e43b",
+    "activityBarBadge.foreground": "#15202b",
+    "editorGroup.border": "#e95eb4",
+    "panel.border": "#e95eb4",
+    "sash.hoverBorder": "#e95eb4",
+    "sideBar.border": "#e95eb4",
+    "statusBar.background": "#e3319f",
+    "statusBar.foreground": "#e7e7e7",
+    "statusBarItem.hoverBackground": "#e95eb4",
+    "statusBarItem.remoteBackground": "#e3319f",
+    "statusBarItem.remoteForeground": "#e7e7e7",
+    "tab.activeBorder": "#e95eb4",
+    "titleBar.activeBackground": "#e3319f",
+    "titleBar.activeForeground": "#e7e7e7",
+    "titleBar.inactiveBackground": "#e3319f99",
+    "titleBar.inactiveForeground": "#e7e7e799"
   },
-  "terminal.integrated.fontFamily": "'OperatorMono Nerd Font', 'Hack Nerd Font', 'FiraCode Nerd Font', 'JetBrainsMono Nerd Font', 'Operator Mono', 'Operator Mono SSm', 'MonoLisa', 'Dank Mono', 'Fira Mono', 'JetBrains Mono', monospace",
-  "terminal.integrated.altClickMovesCursor": true,
-  "terminal.integrated.customGlyphs": true,
-  "terminal.integrated.lineHeight": 1.05,
-  "terminal.integrated.cursorBlinking": true,
-  "terminal.integrated.environmentChangesIndicator": "on",
-  "terminal.integrated.minimumContrastRatio": 3,
-  "terminal.integrated.fontSize": 12,
+
+  // johnpapa.peacock
+  "peacock.remoteColor": "#e3319f",
+
+  // nberlette.gitpod-enhanced
   "git.enableCommitSigning": true,
-  "terminal.integrated.defaultProfile.linux": "bash",
-  "terminal.integrated.profiles.linux": {
-    "bash": {
-      "path": "bash",
-      "icon": "terminal-bash"
-    },
-    "zsh": {
-      "path": "zsh"
-    },
-    "fish": {
-      "path": "fish"
-    }
-  }
+
+  // eg2.vscode-npm-script
+  "npm.bin": "pnpm",
+  "npm.runInTerminal": true,
+  "npm.enableRunFromFolder": true,
+  "npm.fetchOnlinePackageInfo": true,
+  "npm.autoDetect": "on",
+  "npm.packageManager": "pnpm",
+  "npm.runSilent": true,
+  "npm.useRootDirectory": true,
+
+  // christian-kohler.npm-intellisense
+  "npm-intellisense.importES6": true,
+  "npm-intellisense.importQuotes": "'",
+  "npm-intellisense.importDeclarationType": "const", // for require()
+  "npm-intellisense.importLinebreak": "\n",
+  "npm-intellisense.recursivePackageJsonLookup": true,
+  "npm-intellisense.packageSubfoldersIntellisense": true,
+  "npm-intellisense.showBuildInLibs": true,
+  "npm-intellisense.scanDevDependencies": true,
+
+  // your extension here...?
 }

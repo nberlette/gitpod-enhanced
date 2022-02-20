@@ -23,26 +23,21 @@ USER gitpod
 RUN brew update && brew install fzf gh
 
 # https://git.io/git-ps1 - short url for git-prompt.sh in git/git repo
-ADD --chown=gitpod "https://git.io/git-ps1" "/home/gitpod/.bashrc.d/00-gitpod"
+ADD --chown=gitpod "https://git.io/git-ps1" "/home/gitpod/.bashrc.d/00-git-ps1"
 
-RUN chmod 0755 "/home/gitpod/.bashrc.d/00-gitpod"
+RUN chmod 0755 "/home/gitpod/.bashrc.d/00-git-ps1"
 
-ADD --chown=gitpod .profile "/home/gitpod/.gitpod.profile"
-
-RUN echo "\n\n#### gitpod-enhanced ####\n$(cat /home/gitpod/.gitpod.profile)" \
- >> /home/gitpod/.bashrc.d/00-gitpod && rm -f /home/gitpod/.gitpod.profile
+ADD --chown=gitpod:gitpod .aliases "/home/gitpod/.bashrc.d/00-aliases"
+ADD --chown=gitpod:gitpod .prompt "/home/gitpod/.bashrc.d/00-prompt"
+ADD --chown=gitpod:gitpod .profile "/home/gitpod/.bashrc.d/00-gitpod"
 
 ENV PATH="/home/gitpod/.yarn/bin:$PATH"
 
-RUN yarn global add --non-interactive --no-progress \
-    @antfu/ni \
-    @types/node \
-    degit \
-    esm \
-    pnpm \
-    standard \
-    typescript \
-    tslib \
-    tsm \
-    ts-node \
-    ts-standard
+RUN curl -fsSL https://get.pnpm.io/install.sh | sh -
+
+RUN pnpm install --global \
+   @antfu/ni turbo vercel \
+   degit esm standard bundt uvu \
+   eslint prettier prettier-plugin-sh shellcheck \
+   @types/node typescript tslib tsm tsup ts-node \
+   wrangler@beta miniflare cron-scheduler > /dev/null 2>&1;

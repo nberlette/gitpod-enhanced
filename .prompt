@@ -1,0 +1,24 @@
+#!/usr/bin/env bash
+###############################################################################
+##                            ~ GITPOD-ENHANCED ~                            ##
+####          Turbocharged Development Image for Gitpod Workspaces         ####
+###############################################################################
+#####  MIT License (c) 2022+ Nicholas Berlette - <https://git.io/gitpod>  #####
+###############################################################################
+
+# shellcheck shell=bash
+
+# TODO: #8 refactor method for checking/setting GIT_PS1_* defaults
+export GIT_PS1_SHOWCOLORHINTS=${GIT_PS1_SHOWCOLORHINTS:-1}
+export GIT_PS1_SHOWDIRTYSTATE=${GIT_PS1_SHOWDIRTYSTATE:-1}
+export GIT_PS1_SHOWSTASHSTATE=${GIT_PS1_SHOWSTASHSTATE:-1}
+export GIT_PS1_SHOWUNTRACKEDFILES=${GIT_PS1_SHOWUNTRACKEDFILES:-1}
+export GIT_PS1_SHOWUPSTREAM=${GIT_PS1_SHOWUPSTREAM:-'auto'}
+export GIT_PS1_OMITSPARSESTATE=${GIT_PS1_OMITSPARSESTATE:-1}
+export GIT_PS1_STATESEPARATOR=${GIT_PS1_STATESEPARATOR:-' '}
+export GIT_PS1_DESCRIBE_STYLE=${GIT_PS1_DESCRIBE_STYLE:-'tag'}
+export GIT_PS1_HIDE_IF_PWD_IGNORED=${GIT_PS1_HIDE_IF_PWD_IGNORED:-''}
+
+export GIT_PS1_PREFIX=${GIT_PS1_PREFIX:-"\[\e]0;\u \W\e\]\[\e[0m\e[7;36m\]\[\e[0;36;7m\] \W \[\e[0;36m\]\[\e[0;1m\]"}
+export GIT_PS1_SUFFIX=${GIT_PS1_SUFFIX:-"\n\[\e[1;32;6m\]\$\[\e[0m\] "}
+export GIT_PS1_FORMAT=${GIT_PS1_FORMAT:-" %s "}

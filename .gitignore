@@ -11,4 +11,6 @@ node_modules
 .env
 .env.local
 Thumbs.db
-.DS_Store
+.DS_Store.env.*
+.env.*.local
+!.env.project

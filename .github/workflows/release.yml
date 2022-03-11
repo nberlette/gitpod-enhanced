@@ -1,0 +1,88 @@
+name: "Build and Publish"
+on:
+  workflow_dispatch:
+  push:
+    tags:
+      - "v*"
+      - "!v0"
+    branches:
+      - main
+      - next
+      - releases
+    paths:
+      - Dockerfile
+      - .dockerignore
+      - .bash_profile
+      - .bash_prompt
+      - .bash_aliases
+      
+jobs:
+  docker:
+    runs-on: ubuntu-latest
+    steps:
+      - 
+        name: "Checkout Repository"
+        uses: actions/checkout@v2
+      - 
+        name: "Setup: QEMU"
+        uses: docker/setup-qemu-action@v1
+      - 
+        name: "Setup: Docker Buildx"
+        uses: docker/setup-buildx-action@v1
+      - 
+        name: "Login: DockerHub"
+        uses: docker/login-action@v1 
+        with:
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
+      - 
+        name: "Login: GitHub Container Registry"
+        uses: docker/login-action@v1 
+        with:
+          registry: ghcr.io
+          username: ${{ github.repository_owner }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+      - 
+        id: generate-tag
+        name: "Generate Version Tag"
+        run: |
+          if [[ "${{github.ref_type}}" == "branch" ]]
+          then 
+            # push to tag "latest" if branch ref is "main" or "master"
+            if [[ "${{github.ref_name}}" == "main" || "${{github.ref_name}}" == "master" ]]
+              then tag="latest";
+              else tag="${{github.ref_name}}";
+            fi
+            # push to appropriate version for tags/releases
+          elif [[ "${{github.ref_type}}" == "tag" ]]
+            then tag="${{github.ref_name}}";
+          fi
+          tag=${tag##*/}
+          tag=${tag#v}
+          echo "::set_output name=tag::${tag}"
+
+      - # build+push the generated tag if it is not "latest"
+        if: steps.generate-tag.outputs.tag !== "latest"
+        name: "Build Image + Publish"
+        uses: docker/build-push-action@v2
+        with:
+          context: .
+          platforms: linux/amd64
+          push: true
+          tags: |
+            nberlette/gitpod-enhanced:${{ steps.generate-tag.outputs.tag }}
+            ghcr.io/nberlette/gitpod-enhanced:${{ steps.generate-tag.outputs.tag }}
+
+      
+      - # build+push the "latest" tag for all refs except "next"
+        # combined with the previous condition, this prevents duplicate "latest" tags.
+        if: steps.generate-tag.outputs.tag !== "next"
+        name: "Build Image + Publish"
+        uses: docker/build-push-action@v2
+        with:
+          context: .
+          platforms: linux/amd64
+          push: true
+          tags: |
+            nberlette/gitpod-enhanced:latest
+            ghcr.io/nberlette/gitpod-enhanced:latest

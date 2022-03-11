@@ -1,0 +1,40 @@
+{
+  "name": "gitpod-enhanced",
+  "version": "1.0.0-next.0",
+  "license": "MIT",
+  "author": {
+    "name": "Nicholas Berlette",
+    "email": "nick@berlette.com"
+  },
+  "homepage": "https://git.io/gitpod",
+  "description": "Turbocharged workspace image for ephemeral dev environments on Gitpod.io",
+  "repository": "nberlette/gitpod-enhanced",
+  "readme": "https://github.com/nberlette/gitpod-enhanced#readme",
+  "bugs": "https://github.com/nberlette/gitpod-enhanced/issues",
+  "prettier": "@nberlette/prettier",
+  "scripts": {
+    "lint": "run-s lint:*",
+    "lint:bash": "prettier --parser sh --plugin prettier-plugin-sh --check \".bashrc.d/**/*\"",
+    "lint:docker": "prettier --parser docker --plugin prettier-plugin-docker --check Dockerfile", 
+    "lint:shellcheck": "shellcheck --check-sourced -s bash -P SCRIPTDIR ./bashrc.d/.bash_*",
+    "format": "run-s \"lint:bash --write\" \"lint:docker --write\" lint:shellcheck",
+    "test": "run-s shellcheck lint"
+  },
+  "keywords": [
+    "gitpod",
+    "gitpod-enhanced",
+    "docker",
+    "dockerfile",
+    "workspace",
+    "bash",
+    "shell",
+    "dockerfile"
+  ],
+  "devDependencies": {
+    "@nberlette/prettier": "1.0.0",
+    "npm-run-all": "4.1.5",
+    "prettier": "2.5.1",
+    "prettier-plugin-sh": "0.8.1",
+    "shellcheck": "1.1.0"
+  }
+}

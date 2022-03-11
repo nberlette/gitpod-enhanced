@@ -1,7 +1,7 @@
 ---
-name: Bug report
-about: Create a report to help us improve
-title: "[BUG]"
+name: 🐛 Bug Report
+about: Report a bug or error to improve our software
+title: "🐛 [BUG]"
 labels: bug
 assignees: nberlette
 

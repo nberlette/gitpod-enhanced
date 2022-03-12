@@ -2,13 +2,10 @@ name: "Build and Publish"
 on:
   workflow_dispatch:
   push:
-    tags:
-      - "v*"
-      - "!v0"
     branches:
       - main
       - next
-      - releases
+      - "releases/**"  
     paths:
       - Dockerfile
       - .dockerignore

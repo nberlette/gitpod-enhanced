@@ -182,9 +182,9 @@ export TZ=${TZ:-'America/Los_Angeles'}
 
 export GPG_TTY=$(tty)
 
-[ -n "${GPG_KEY-}" ] && [ $GPG_CONFIGURED ne 1 ] && __gpg_init
+[ -n "${GPG_KEY-}" ] && __gpg_init
 
-[ -n "${SSH_KEY-}" ] && [ $SSH_CONFIGURED ne 1 ] && __ssh_init
+[ -n "${SSH_KEY-}" ] && __ssh_init
 
 [ -n "${GITHUB_TOKEN-}" ] && __gh_login
 

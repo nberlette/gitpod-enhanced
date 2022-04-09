@@ -12,3 +12,7 @@ node_modules
 .env.local
 Thumbs.db
 .DS_Store
+.prompt~
+.aliases~
+.profile~
+.*~

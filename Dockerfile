@@ -13,31 +13,32 @@ LABEL org.opencontainers.image.license="MIT"
 
 ARG DEBIAN_FRONTEND=noninteractive
 RUN sudo apt-get -y update \
- && sudo apt-get -y install \
-    git-extras \
-    neovim \
+ && sudo apt-get -y upgrade \
  && sudo rm -rf /var/lib/apt/lists/*
 
 USER gitpod
 
-RUN brew update && brew install fzf gh
+RUN brew update \
+ && brew install --quiet --overwrite \
+    bash gcc fzf gh git-extras neovim lolcat \
+    docker docker-compose supabase/tap/supabase \
+    jq starship pygments shellcheck shfmt 2>/dev/null;
 
 # https://git.io/git-ps1 - short url for git-prompt.sh in git/git repo
 ADD --chown=gitpod "https://git.io/git-ps1" "/home/gitpod/.bashrc.d/00-git-ps1"
 
 RUN chmod 0755 "/home/gitpod/.bashrc.d/00-git-ps1"
 
-ADD --chown=gitpod:gitpod .aliases "/home/gitpod/.bashrc.d/00-aliases"
-ADD --chown=gitpod:gitpod .prompt "/home/gitpod/.bashrc.d/00-prompt"
-ADD --chown=gitpod:gitpod .profile "/home/gitpod/.bashrc.d/00-gitpod"
+ADD --chown=gitpod:gitpod .aliases "/home/gitpod/.bash_aliases"
+ADD --chown=gitpod:gitpod .profile "/home/gitpod/.profile"
 
-ENV PATH="/home/gitpod/.yarn/bin:$PATH"
+ENV PATH="/home/gitpod/.yarn/bin:/home/gitpod/.local/share/pnpm:$PATH"
 
-RUN curl -fsSL https://get.pnpm.io/install.sh | sh -
+RUN curl -fsSL https://get.pnpm.io/install.sh | bash - && pnpm env --global use lts
 
 RUN pnpm install --global \
-   @antfu/ni turbo vercel \
-   degit esm standard bundt uvu \
+   @antfu/ni turbo vercel degit esm standard bundt uvu \
    eslint prettier prettier-plugin-sh shellcheck \
    @types/node typescript tslib tsm tsup ts-node \
    wrangler@beta miniflare cron-scheduler > /dev/null 2>&1;
+

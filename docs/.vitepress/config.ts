@@ -11,14 +11,18 @@ export default defineConfig({
     nav: [
       {
         text: 'Contribute',
-        link: './contribute',
+        link: '/contribute',
+      },
+      {
+        text: 'Custom Docker Images',
+        link: '/gitpod-docker',
       },
       {
         text: 'Open in Gitpod',
         link: 'https://gitpod.io/#https://github.com/nberlette/gitpod-enhanced',
       },
       {
-        text: 'GitHub',
+        text: 'View on GitHub',
         link: 'https://github.com/nberlette/gitpod-enhanced',
       },
     ],

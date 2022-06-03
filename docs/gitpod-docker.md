@@ -2,6 +2,10 @@
 title: "Custom Dockerfile with Gitpod"
 ---
 
+# Custom Docker Images with Gitpod
+
+> **Note**: this page is copied directly from [the Gitpod documentation](https://gitpod.io/docs/custom-docker).
+
 By default, Gitpod uses a standard Docker Image called [`Workspace-Full`](https://github.com/gitpod-io/workspace-images/blob/481f7600b725e0ab507fbf8377641a562a475625/dazzle.yaml#L18) as the foundation for workspaces. Workspaces started based on this default image come pre-installed with Docker, Nix, Go, Java, Node.js, C/C++, Python, Ruby, Rust, PHP as well as tools such as Homebrew, Tailscale, Nginx and several more.
 
 If this image does not include the tools you need for your project, you can provide a public Docker image or your own [Dockerfile](#using-a-dockerfile). This provides you with the flexibility to install the tools & libraries required for your project.

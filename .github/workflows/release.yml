@@ -6,17 +6,17 @@ on:
   push:
     branches:
       - 'main'
-      - 'next'
       - 'releases/**'
       - 'release/**'
-    paths-ignore:
-      - 'docs/**'
     tags:
       - 'v*.*.*'
+    paths-ignore:
+      - 'docs/**'
   pull_request:
     branches:
       - 'main'
-
+    paths-ignore:
+      - 'docs/**'
 jobs:
   docker:
     runs-on: ubuntu-latest

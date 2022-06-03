@@ -40,7 +40,7 @@ Next, create a `.gitpod.Dockerfile` file at the root of your project. The syntax
 A good starting point for creating a custom `.gitpod.Dockerfile` is the
 <a href="https://github.com/gitpod-io/workspace-images/blob/481f7600b725e0ab507fbf8377641a562a475625/dazzle.yaml#L18" target="_blank">gitpod/workspace-full</a> image as it already contains all the tools necessary to work with all languages Gitpod supports.
 
-```dockerfile
+```bash
 # You can find the new timestamped tags here: https://hub.docker.com/r/gitpod/workspace-full/tags
 FROM gitpod/workspace-full:2022-05-08-14-31-53
 
@@ -52,7 +52,7 @@ RUN brew install fzf
 
 If you want a base image without the default tooling installed then use the <a href="https://github.com/gitpod-io/workspace-images/blob/481f7600b725e0ab507fbf8377641a562a475625/dazzle.yaml#L3" target="_blank">gitpod/workspace-base</a> image.
 
-```dockerfile
+```bash
 # You can find the new timestamped tags here: https://hub.docker.com/r/gitpod/workspace-base/tags
 FROM gitpod/workspace-base:2022-05-08-14-31-53
 
@@ -66,7 +66,7 @@ When you launch a Gitpod workspace, the local console will use the `gitpod` user
 
 You can however use `sudo` in your Dockerfile. The following example shows a typical `.gitpod.Dockerfile` inheriting from `gitpod/workspace-full`:
 
-```dockerfile
+```bash
 # You can find the new timestamped tags here: https://hub.docker.com/r/gitpod/workspace-full/tags
 FROM gitpod/workspace-full:2022-05-08-14-31-53
 

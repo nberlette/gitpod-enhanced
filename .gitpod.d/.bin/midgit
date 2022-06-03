@@ -1,0 +1,92 @@
+#!/bin/bash
+
+# Copyright (c) 2021+ Nicholas Berlette <n@berlette.com>
+# <https://github.com/nberlette/gitio>
+
+APP=$(basename "$0")
+
+function _c() {
+	printf "%s" $(echo -e "\\033[${1: -0}m")
+}
+
+C_RST=$(_c 0)
+C_BLD=$(_c 1)
+C_DIM=$(_c 2)
+C_ITA=$(_c 3)
+C_ULD=$(_c 4)
+C_RED=$(_c 31)
+C_BLU=$(_c 34)
+
+function __gitio_usage() {
+	cat <<- EOL
+
+		        $C_BLU${APP}$C_RST$C_BLU$C_BLD: git.io link shortener and auto-copier$C_RST
+		$C_DIM~=~=~=~=~=~=~=~=~=~=~=~=~=~=~=~=~=~=~=~=~=~=~=~=~=~=~=~=~=~=~=~=~$C_RST
+
+		${C_ULD}Usage$C_RST:  
+
+		  ${C_DIM}\$${C_RST} $APP  <url>  $C_DIM [slug]$C_RST
+
+		  $C_BLD url $C_RST      GitHub-based URL you want to shorten     $C_RED <required>$C_RST
+		  $C_BLD slug $C_RST     URL's new unique ID e.g. git.io/[slug]   $C_DIM [optional]$C_RST
+
+		${C_ULD}Examples$C_RST
+
+		    $C_BLU$C_BLD$APP$C_RST https://nberlette.github.io "nberlette"      
+		    $C_BLU$C_BLD$APP$C_RST https://github.com/nberlette/emoji "nemoji"   
+		    $C_BLU$C_BLD$APP$C_RST https://gist.github.com/${C_DIM}[...]${C_RST}  ${C_DIM}${C_ITA}# git.io/c80b6${C_RST}
+
+		$C_DIM~=~=~=~=~=~=~=~=~=~=~=~=~=~=~=~=~=~=~=~=~=~=~=~=~=~=~=~=~=~=~=~=~$C_RST
+
+		$C_ITA  * To be considered Valid, the URL must be of github origin.
+
+		  * If the URL has already been shortened, git.io will return
+		    the original slug. There is currently no option to assign 
+		    a new slug to existing URLs, but appending '?' or '.git'
+		    can usually force a new slug.
+		$C_RST
+
+		$C_BLD${C_ULD}License$C_RST$C_BLD: MIT (c) $(date +%Y || '2021')+ Nicholas Berlette <nick@berlette.com>
+
+	EOL
+}
+
+function __gitio_check_url() {
+	local URL_REGEX="^https?://(?:([^.]+\.)?(github.com|githubusercontent.com|github.io))/?"
+	echo "$1" | grep -Eq "$URL_REGEX" > /dev/null
+}
+
+function __gitio_make_url() {
+	[ ! -z "$1" ] && URL="$1" && shift
+	[ ! -z "$1" ] && SLUG="$1" && shift
+	OUT="$(
+		curl -si https://git.io -F "url=$URL" ${SLUG:+-F "code=$SLUG"} \
+			| sed -e '/^Status: /{s///;/^201/d;q;};' -e '/^Location: /!d;s///' \
+			| tr -d '\r\n'
+	)"
+	if expr "$OUT" : "[0-9]\+" > /dev/null; then
+		echo "$OUT" >&2
+		exit 254
+	fi
+	echo "$OUT"
+
+	which xclip > /dev/null && (printf "%s" $OUT | xclip -selection clipboard) && exit 0
+	which xsel > /dev/null && (printf "%s" $OUT | xsel -i -b) && exit 0
+	which pbcopy > /dev/null && (printf "%s" $OUT | pbcopy) && exit 0
+}
+
+if [ "$#" = 0 ]; then
+	__gitio_usage && exit 128
+elif printf "%s" "$1" | grep -Eq "^(?:-?-h(elp)?)"; then
+	__gitio_usage && exit 0
+else
+	URL="https://${1##*://}"
+	SLUG="${2:-$(echo "$URL" | sed -E 's/^https?:\/\/(?:([^.]+\.)?(github.com|githubusercontent.com|github.io))\/?//')}"
+	if __gitio_check_url "$URL"; then
+		__gitio_make_url "$URL" "$SLUG"
+	else
+		echo -e " ${C_RED}🔺 Invalid URL!${C_RST} For more information, type:\n   $APP --help " >&2
+		exit 127
+	fi
+fi
+unset APP C_RST C_BLD C_DIM C_ITA C_ULD C_RED C_BLU

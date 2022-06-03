@@ -1,0 +1,150 @@
+#!/usr/bin/env bash
+# -*- coding: utf-8 -*-
+
+## ------------------------------------------------------------------------ ##
+##  .path                                    Nicholas Berlette, 2022-05-11  ##
+## ------------------------------------------------------------------------ ##
+##  https://github.com/nberlette/dotfiles/blob/main/.path                   ##
+## ------------------------------------------------------------------------ ##
+
+[ -r ~/.bashrc.d/core.sh ] && {
+  # shellcheck source=/dev/null
+  . ~/.bashrc.d/core.sh 2>/dev/null
+} || exit $?
+
+export PATH="${PATH:-"$HOME/.bin:$HOME/.local/bin:$HOME/bin:/usr/local/bin:/usr/bin:/bin:/sbin:/usr/sbin:/usr/local/sbin"}"
+
+HOMEBREW_PREFIX="${HOMEBREW_PREFIX:-"$(brew --prefix)"}"
+export HOMEBREW_PREFIX
+
+src ~/.bashrc.d
+
+# go
+export GOPATH="$HOME/.go"
+export PATH="/usr/local/go/bin:$GOPATH/bin:$PATH"
+export CDPATH="$CDPATH:$GOPATH/src/github.com:$GOPATH/src/golang.org:$GOPATH/src"
+
+# rust
+export PATH="$HOME/.cargo/bin:$PATH"
+
+# c/c++/gcc/bcc
+export PATH="/usr/share/bcc/tools:$PATH"
+export CXXFLAGS="$CXXFLAGS -stdlib=libc++ -Wno-deprecated-declarations -Wno-deprecated -framework CoreFoundation"
+# llvm
+export PATH="${HOMEBREW_PREFIX-}/opt/llvm/bin:$PATH"
+
+# mysql
+export PATH="${HOMEBREW_PREFIX-}/opt/mysql-client/bin:$PATH"
+export MYSQL_INCLUDE_DIR="${HOMEBREW_PREFIX-}/opt/mysql-client/include/mysql"
+
+# boost
+export BOOST_INCLUDE_DIR="${HOMEBREW_PREFIX-}/include"
+
+# bash completions
+# src /etc/bash_completion /etc/bash_completion.d
+
+# github cli completions
+eval "$(gh completion -s bash 2>/dev/null)"
+
+# supabase cli completions
+eval "$(supabase completion bash 2>/dev/null)"
+
+os="$(uname -s | tr '[:upper:]' '[:lower:]')"
+# platform-specific stuff
+case "$os" in
+"linux")
+  # linux-only completions and path stuff
+  # shellcheck source=/dev/null
+
+  if [ -d /home/linuxbrew/.linuxbrew ]; then
+    export PATH="/home/linuxbrew/.linuxbrew/bin:/home/linuxbrew/.linuxbrew/sbin:/usr/local/bin:/usr/local/sbin${PATH+:$PATH}"
+    export MANPATH="/home/linuxbrew/.linuxbrew/share/man:/usr/local/share/man:/usr/share/man:$HOME/.local/share/man${MANPATH+:$MANPATH}:"
+    export INFOPATH="/home/linuxbrew/.linuxbrew/share/info:/usr/local/share/info:/usr/share/info:$HOME/.local/share/info:${INFOPATH:-}"
+  fi
+  ;;
+"darwin")
+  # macOS club members only, pal...
+  export PATH="${HOMEBREW_PREFIX-}/bin:${HOMEBREW_PREFIX-}/sbin:$PATH"
+  export LIBRARY_PATH="${HOMEBREW_PREFIX-}/lib:$LIBRARY_PATH"
+  export LDFLAGS="$LDFLAGS -L${HOMEBREW_PREFIX-}/lib"
+  export CPPFLAGS="$CPPFLAGS -I${HOMEBREW_PREFIX-}/include"
+
+  # shellcheck source=/dev/null
+  # src "${HOMEBREW_PREFIX-}/etc/profile.d/bash_completion.sh" 2>/dev/null;
+  # src "${HOMEBREW_PREFIX-}/etc/bash_completion.d" 2>/dev/null;
+
+  if [ -d /opt/homebrew ] && [ -x /opt/homebrew/bin/brew ]; then
+    export HOMEBREW_PREFIX="/opt/homebrew"
+    export HOMEBREW_CELLAR="/opt/homebrew/Cellar"
+    export HOMEBREW_REPOSITORY="/opt/homebrew/Homebrew"
+    export PATH="/opt/homebrew/bin:/opt/homebrew/sbin${PATH+:$PATH}"
+    export MANPATH="/opt/homebrew/share/man${MANPATH+:$MANPATH}:"
+    export INFOPATH="/opt/homebrew/share/info:${INFOPATH:-}"
+  else
+    export HOMEBREW_PREFIX="/usr/local"
+    export HOMEBREW_CELLAR="/usr/local/Cellar"
+    export HOMEBREW_REPOSITORY="/usr/local/Homebrew"
+    export PATH="/usr/local/bin:/usr/local/sbin${PATH+:$PATH}"
+    export MANPATH="/usr/local/share/man${MANPATH+:$MANPATH}:"
+    export INFOPATH="/usr/local/share/info:${INFOPATH:-}"
+  fi
+
+  # iTerm.app
+  if [[ "$os" == "darwin" ]] && [[ "$TERM_PROGRAM" == "iTerm.app" ]]; then
+    [ -d "$HOME/.iterm2" ] && export PATH="$HOME/.iterm2:$PATH"
+
+    case "$SHELL" in
+    *bash)
+      # shellcheck source=/dev/null
+      [ -f "$HOME/.iterm2_shell_integration.bash" ] &&
+        src "$HOME/.iterm2_shell_integration.bash" 2>/dev/null
+      ;;
+    *zsh)
+      # shellcheck source=/dev/null
+      [ -f "$HOME/.iterm2_shell_integration.zsh" ] &&
+        src "$HOME/.iterm2_shell_integration.zsh" 2>/dev/null
+      ;;
+    esac
+  fi
+  ;;
+esac
+
+# yarn
+export PATH="$HOME/.config/yarn/global/node_modules/.bin:$PATH"
+
+if [ -z "$PNPM_HOME" ]; then
+  if [ -d "$HOME/.local/share/pnpm" ]; then
+    export PNPM_HOME="$HOME/.local/share/pnpm"
+  elif [ -d "$HOME/Library/pnpm" ]; then
+    export PNPM_HOME="$HOME/Library/pnpm"
+  else
+    export PNPM_HOME="$(dirname -- "$(which pnpm 2>/dev/null)")"
+  fi
+fi
+
+export PATH="${PNPM_HOME+"$PNPM_HOME:"}$PATH"
+
+# OpenSSL, coreutils, findutils, make, etc.
+export PATH="${HOMEBREW_PREFIX-}/opt/openssl/bin:$PATH"
+export LDFLAGS="$LDFLAGS -L${HOMEBREW_PREFIX-}/opt/openssl/lib"
+export CPPFLAGS="$CPPFLAGS -I${HOMEBREW_PREFIX-}/opt/openssl/include"
+export OPENSSL_ROOT_DIR="${HOMEBREW_PREFIX-}/opt/openssl"
+export PKG_CONFIG_PATH="${HOMEBREW_PREFIX-}/opt/openssl/lib/pkgconfig:$PKG_CONFIG_PATH"
+export PATH="/usr/local/opt/coreutils/libexec/gnubin:$PATH"
+export MANPATH="/usr/local/opt/coreutils/libexec/gnuman:$MANPATH"
+export PATH="/usr/local/opt/make/libexec/gnubin:$PATH"
+export MANPATH="/usr/local/opt/make/libexec/gnuman:$MANPATH"
+export PATH="/usr/local/opt/findutils/libexec/gnubin:$PATH"
+export MANPATH="/usr/local/opt/findutils/libexec/gnuman:$MANPATH"
+export PATH="/usr/local/opt/gnu-sed/libexec/gnubin:/opt/homebrew/opt/gnu-sed/libexec/gnubin:$PATH"
+export PATH="/usr/local/opt/gnu-getopt/bin:$PATH"
+
+# coreutils
+export PATH="${HOMEBREW_PREFIX-}/opt/coreutils/libexec/gnubin:$PATH"
+
+# ~/.bin, ~/.local/bin, ~/.dotfiles/.bin
+export PATH="$HOME/.bin:$HOME/.local/bin:$HOME/.dotfiles/.bin:$PATH"
+
+if type -t dedupe_path &>/dev/null; then
+  export PATH="$(dedupe_path)"
+fi

@@ -1,0 +1,828 @@
+# "$schema" = 'https://starship.rs/config-schema.json'
+
+format = '$time$username$directory$sudo$git_branch$git_status$git_metrics$git_state$git_commit$hg_branch$package$nodejs$docker_context$golang$deno$php$python$ruby$rust$nix_shell$line_break$status$character'
+
+right_format = '$battery$memory_usage$status$jobs$cmd_duration'
+
+continuation_prompt = '[ › ](bright-black) '
+scan_timeout = 30
+command_timeout = 500
+add_newline = false
+
+
+#######################################################################
+#                                                                     #
+#                      PRIORITIZED MODULE OPTIONS                     #
+#                                                                     #
+#######################################################################
+
+[time]
+format = '(⌚ [$time]($style) [·](dimmed $style) )'
+style = 'blue dimmed'
+use_12hr = true
+disabled = false
+utc_time_offset = 'local'
+time_range = '-'
+
+[env_var]
+
+[git_branch]
+format = '([·](dimmed $style) [$symbol$branch(:$remote_branch)]($style) )'
+symbol = ' '
+style = 'bold purple'
+truncation_length = 128
+truncation_symbol = '…'
+only_attached = false
+always_show_remote = false
+disabled = false
+
+[git_commit]
+commit_hash_length = 7
+format = '[\($hash$tag\)]($style) '
+style = 'green bold'
+only_detached = true
+disabled = false
+tag_symbol = ' 🏷  '
+tag_disabled = false
+
+[git_metrics]
+added_style = 'bold green'
+deleted_style = 'bold red'
+only_nonzero_diffs = true
+format = '([\(](dimmed bright-black)([+$added]($added_style) )([-$deleted]($deleted_style))[\)](dimmed bright-black) )'
+disabled = false
+
+[git_state]
+rebase = 'REBASING'
+merge = 'Ⓜ️ ' # merge = 'MERGING'
+revert = '⏮ ' # revert = 'REVERTING'
+cherry_pick = '🍒 ' # cherry_pick = 'CHERRY-PICKING'
+bisect = '🔀 ' # bisect = 'BISECTING'
+am = 'AM'
+am_or_rebase = 'AM/REBASE'
+style = 'bold yellow'
+format = '\([$state( $progress_current/$progress_total)]($style)\) '
+disabled = false
+
+[git_status]
+format = '([[\[](dimmed $style)$all_status$ahead_behind[\]](dimmed $style)]($style) )'
+style = 'red bold'
+stashed = '\$'
+ahead = '⇡'
+behind = '⇣'
+up_to_date = ''
+diverged = '⇕'
+conflicted = '='
+deleted = '✘'
+renamed = '»'
+modified = '!'
+staged = '+'
+untracked = '?'
+ignore_submodules = false
+disabled = false
+
+[username]
+format = '[$user]($style) [in](dimmed italic) '
+style_root = 'red bold'
+style_user = 'yellow bold'
+show_always = true
+disabled = false
+
+
+[battery]
+full_symbol = '✅🔋'
+charging_symbol = '⚡️🔋'
+discharging_symbol = '🪫'
+unknown_symbol = '⁇🪫'
+empty_symbol = '🪫➟🔌'
+disabled = false
+format = '[$symbol$percentage]($style) '
+
+# [[battery.display]]
+# style = 'green'
+
+# [[battery.display]]
+# threshold = 20
+# style = 'red bold'
+
+
+[jobs]
+threshold = 1
+symbol_threshold = 1
+number_threshold = 2
+format = '[$symbol$number]($style) '
+symbol = '✦'
+style = 'bold blue'
+disabled = false
+
+[character]
+format = '$symbol '
+success_symbol = '[❯](bold green)'
+error_symbol = '[❯](bold red)'
+vicmd_symbol = '[❮](bold green)'
+disabled = false
+
+
+[cmd_duration]
+min_time = 2000
+format = '(· [$duration]($style) )'
+style = 'yellow bold'
+show_milliseconds = false
+disabled = false
+show_notifications = false
+min_time_to_notify = 45000
+
+
+[hostname]
+ssh_only = true
+trim_at = '.'
+format = '[$hostname]($style) in '
+style = 'green dimmed bold'
+disabled = false
+
+[directory]
+# truncation_length = 4
+truncate_to_repo = true
+fish_style_pwd_dir_length = 4
+use_logical_path = true
+format = '[$path]($style)[$read_only]($read_only_style) '
+repo_root_format = '[$before_root_path]($style)[$repo_root]($repo_root_style)[$path]($style)[$read_only]($read_only_style) '
+style = 'cyan bold'
+disabled = false
+read_only = '🔒'
+read_only_style = 'red'
+truncation_symbol = '…'
+# home_symbol = '🏠'
+use_os_path_sep = true
+
+[directory.substitutions]
+
+
+[memory_usage]
+threshold = 40
+format = '(· $symbol[$ram( | $swap)]($style) )'
+style = 'white bold dimmed'
+symbol = '🐏 '
+disabled = false
+
+
+[package]
+format = '([·](dimmed $style) $symbol[$version](underline $style) )'
+symbol = '📦 '
+style = '99'
+display_private = true
+disabled = false
+version_format = '${raw}'
+
+
+[container]
+format = '[$symbol \[$name\]]($style) '
+symbol = '🫙'
+style = 'red bold dimmed'
+disabled = false
+
+[nodejs]
+format = '([·](dimmed $style) [[$symbol]($style)($version )](dimmed $style))'
+version_format = '${raw}'
+# symbol = ' '
+symbol = '⬢ '
+style = 'bright-green'
+disabled = false
+not_capable_style = 'bold red'
+detect_extensions = [
+    'js',
+    'mjs',
+    'cjs',
+    'ts',
+    'mts',
+    'cts',
+]
+detect_files = [
+    'package.json',
+    '.node-version',
+    '.nvmrc',
+]
+detect_folders = ['node_modules']
+
+[golang]
+format = 'via [$symbol($version )]($style)'
+version_format = 'v${raw}'
+symbol = '🐹 '
+style = 'bold cyan'
+disabled = false
+detect_extensions = ['go']
+detect_files = [
+    'go.mod',
+    'go.sum',
+    'glide.yaml',
+    'Gopkg.yml',
+    'Gopkg.lock',
+    '.go-version',
+]
+detect_folders = ['Godeps']
+
+[status]
+format = '[$symbol $status]($style) '
+symbol = '✖'
+success_symbol = ''
+not_executable_symbol = '🚫'
+not_found_symbol = '🔍'
+sigint_symbol = '🧱'
+signal_symbol = '⚡'
+style = 'bold red'
+map_symbol = false
+recognize_signal_code = true
+pipestatus = false
+pipestatus_separator = '|'
+pipestatus_format = '\[$pipestatus\] => [$symbol$common_meaning$signal_name$maybe_int]($style)'
+disabled = false
+
+[sudo]
+format = '[as](dimmed) [$symbol]($style)'
+symbol = '🧙 '
+style = 'bold blue'
+allow_windows = false
+disabled = false
+
+[ruby]
+format = 'via [$symbol($version )]($style)'
+version_format = 'v${raw}'
+symbol = '💎 '
+style = 'bold red'
+disabled = true
+detect_extensions = ['rb']
+detect_files = [
+    'Gemfile',
+    '.ruby-version',
+]
+detect_folders = []
+detect_variables = [
+    'RUBY_VERSION',
+    'RBENV_VERSION',
+]
+
+[rust]
+format = 'via [$symbol($version )]($style)'
+version_format = 'v${raw}'
+symbol = '🦀 '
+style = 'bold red'
+disabled = false
+detect_extensions = ['rs']
+detect_files = ['Cargo.toml']
+detect_folders = []
+
+
+[php]
+format = 'via [$symbol($version )]($style)'
+version_format = 'v${raw}'
+symbol = '🐘 '
+style = '147 bold'
+disabled = false
+detect_extensions = ['php']
+detect_files = [
+    'composer.json',
+    '.php-version',
+]
+detect_folders = []
+
+[python]
+pyenv_version_name = false
+pyenv_prefix = 'pyenv '
+python_binary = [
+    'python',
+    'python3',
+    'python2',
+]
+format = 'via [${symbol}${pyenv_prefix}(${version} )(\($virtualenv\) )]($style)'
+version_format = 'v${raw}'
+style = 'yellow bold'
+symbol = '🐍 '
+disabled = false
+detect_extensions = ['py']
+detect_files = [
+    'requirements.txt',
+    '.python-version',
+    'pyproject.toml',
+    'Pipfile',
+    'tox.ini',
+    'setup.py',
+    '__init__.py',
+]
+detect_folders = []
+
+[deno]
+format = 'via [$symbol($version )]($style)'
+version_format = 'v${raw}'
+symbol = '🦕 '
+style = 'green bold'
+disabled = false
+detect_extensions = []
+detect_files = [
+    'deno.json',
+    'deno.jsonc',
+    'mod.ts',
+    'deps.ts',
+    'mod.js',
+    'deps.js',
+]
+detect_folders = []
+
+[docker_context]
+symbol = '🐳 '
+style = 'blue bold'
+format = 'via [$symbol$context]($style) '
+only_with_files = true
+disabled = false
+detect_extensions = []
+detect_files = [
+    'docker-compose.yml',
+    'docker-compose.yaml',
+    'Dockerfile',
+]
+detect_folders = []
+
+
+
+#######################################################################
+#                                                                     #
+#                     OTHER MODULE CONFIG OPTIONS                     #
+#                                                                     #
+#######################################################################
+
+[aws]
+format = 'on [$symbol($profile )(\($region\) )(\[$duration\] )]($style)'
+symbol = '☁️  '
+style = 'bold yellow'
+disabled = false
+expiration_symbol = 'X'
+force_display = false
+
+[aws.region_aliases]
+
+[aws.profile_aliases]
+
+[azure]
+format = 'on [$symbol($subscription)]($style) '
+symbol = 'ﴃ '
+style = 'blue bold'
+disabled = true
+
+
+[cmake]
+format = 'via [$symbol($version )]($style)'
+version_format = 'v${raw}'
+symbol = '△ '
+style = 'bold blue'
+disabled = false
+detect_extensions = []
+detect_files = [
+    'CMakeLists.txt',
+    'CMakeCache.txt',
+]
+detect_folders = []
+
+
+[cobol]
+format = 'via [$symbol($version )]($style)'
+version_format = 'v${raw}'
+symbol = '⚙️ '
+style = 'bold blue'
+disabled = false
+detect_extensions = [
+    'cbl',
+    'cob',
+    'CBL',
+    'COB',
+]
+detect_files = []
+detect_folders = []
+
+[conda]
+truncation_length = 1
+format = 'via [$symbol$environment]($style) '
+symbol = '🅒 '
+style = 'green bold'
+ignore_base = true
+disabled = false
+
+
+[crystal]
+format = 'via [$symbol($version )]($style)'
+version_format = 'v${raw}'
+symbol = '🔮 '
+style = 'bold red'
+disabled = false
+detect_extensions = ['cr']
+detect_files = ['shard.yml']
+detect_folders = []
+
+[dart]
+format = 'via [$symbol($version )]($style)'
+version_format = 'v${raw}'
+symbol = '🎯 '
+style = 'bold blue'
+disabled = false
+detect_extensions = ['dart']
+detect_files = [
+    'pubspec.yaml',
+    'pubspec.yml',
+    'pubspec.lock',
+]
+detect_folders = ['.dart_tool']
+
+[dotnet]
+format = 'via [$symbol($version )(🎯 $tfm )]($style)'
+version_format = 'v${raw}'
+symbol = '.NET '
+style = 'blue bold'
+heuristic = true
+disabled = false
+detect_extensions = [
+    'csproj',
+    'fsproj',
+    'xproj',
+]
+detect_files = [
+    'global.json',
+    'project.json',
+    'Directory.Build.props',
+    'Directory.Build.targets',
+    'Packages.props',
+]
+detect_folders = []
+
+[elixir]
+format = 'via [$symbol($version \(OTP $otp_version\) )]($style)'
+version_format = 'v${raw}'
+symbol = '💧 '
+style = 'bold purple'
+disabled = false
+detect_extensions = []
+detect_files = ['mix.exs']
+detect_folders = []
+
+[elm]
+format = 'via [$symbol($version )]($style)'
+version_format = 'v${raw}'
+symbol = '🌳 '
+style = 'cyan bold'
+disabled = false
+detect_extensions = ['elm']
+detect_files = [
+    'elm.json',
+    'elm-package.json',
+    '.elm-version',
+]
+detect_folders = ['elm-stuff']
+
+[erlang]
+format = 'via [$symbol($version )]($style)'
+version_format = 'v${raw}'
+symbol = ' '
+style = 'bold red'
+disabled = false
+detect_extensions = []
+detect_files = [
+    'rebar.config',
+    'erlang.mk',
+]
+detect_folders = []
+
+[fill]
+style = 'bold black'
+symbol = '.'
+disabled = false
+
+[gcloud]
+format = 'on [$symbol$account(@$domain)(\($region\))]($style) '
+symbol = '☁️  '
+style = 'bold blue'
+disabled = false
+
+[gcloud.region_aliases]
+
+[gcloud.project_aliases]
+
+[helm]
+format = 'via [$symbol($version )]($style)'
+version_format = 'v${raw}'
+symbol = '⎈ '
+style = 'bold white'
+disabled = false
+detect_extensions = []
+detect_files = [
+    'helmfile.yaml',
+    'Chart.yaml',
+]
+detect_folders = []
+
+[hg_branch]
+symbol = ' '
+style = 'bold purple'
+format = 'on [$symbol$branch]($style) '
+truncation_length = 9223372036854775807
+truncation_symbol = '…'
+disabled = true
+
+[java]
+disabled = false
+format = 'via [$symbol($version )]($style)'
+version_format = 'v${raw}'
+style = 'red dimmed'
+symbol = '☕ '
+detect_extensions = [
+    'java',
+    'class',
+    'jar',
+    'gradle',
+    'clj',
+    'cljc',
+]
+detect_files = [
+    'pom.xml',
+    'build.gradle.kts',
+    'build.sbt',
+    '.java-version',
+    'deps.edn',
+    'project.clj',
+    'build.boot',
+]
+detect_folders = []
+
+[julia]
+format = 'via [$symbol($version )]($style)'
+version_format = 'v${raw}'
+symbol = 'ஃ '
+style = 'bold purple'
+disabled = false
+detect_extensions = ['jl']
+detect_files = [
+    'Project.toml',
+    'Manifest.toml',
+]
+detect_folders = []
+
+[kotlin]
+format = 'via [$symbol($version )]($style)'
+version_format = 'v${raw}'
+symbol = '🅺 '
+style = 'bold blue'
+kotlin_binary = 'kotlin'
+disabled = false
+detect_extensions = [
+    'kt',
+    'kts',
+]
+detect_files = []
+detect_folders = []
+
+[kubernetes]
+symbol = '☸ '
+format = '[$symbol$context( \($namespace\))]($style) in '
+style = 'cyan bold'
+disabled = true
+
+[kubernetes.context_aliases]
+
+[line_break]
+disabled = false
+
+[localip]
+ssh_only = true
+format = '[$localipv4]($style) '
+style = 'yellow bold'
+disabled = true
+
+[lua]
+format = 'via [$symbol($version )]($style)'
+version_format = 'v${raw}'
+symbol = '🌙 '
+style = 'bold blue'
+lua_binary = 'lua'
+disabled = false
+detect_extensions = ['lua']
+detect_files = ['.lua-version']
+detect_folders = ['lua']
+
+[nim]
+format = 'via [$symbol($version )]($style)'
+version_format = 'v${raw}'
+symbol = '👑 '
+style = 'yellow bold'
+disabled = false
+detect_extensions = [
+    'nim',
+    'nims',
+    'nimble',
+]
+detect_files = ['nim.cfg']
+detect_folders = []
+
+[nix_shell]
+format = 'via [$symbol$state( \($name\))]($style) '
+symbol = '❄️  '
+style = 'bold blue'
+impure_msg = 'impure'
+pure_msg = 'pure'
+disabled = false
+
+[ocaml]
+format = 'via [$symbol($version )(\($switch_indicator$switch_name\) )]($style)'
+version_format = 'v${raw}'
+global_switch_indicator = ''
+local_switch_indicator = '*'
+symbol = '🐫 '
+style = 'bold yellow'
+disabled = false
+detect_extensions = [
+    'opam',
+    'ml',
+    'mli',
+    're',
+    'rei',
+]
+detect_files = [
+    'dune',
+    'dune-project',
+    'jbuild',
+    'jbuild-ignore',
+    '.merlin',
+]
+detect_folders = [
+    '_opam',
+    'esy.lock',
+]
+
+[openstack]
+format = 'on [$symbol$cloud(\($project\))]($style) '
+symbol = '☁️  '
+style = 'bold yellow'
+disabled = false
+
+[perl]
+format = 'via [$symbol($version )]($style)'
+version_format = 'v${raw}'
+symbol = '🐪 '
+style = '149 bold'
+disabled = false
+detect_extensions = [
+    'pl',
+    'pm',
+    'pod',
+]
+detect_files = [
+    'Makefile.PL',
+    'Build.PL',
+    'cpanfile',
+    'cpanfile.snapshot',
+    'META.json',
+    'META.yml',
+    '.perl-version',
+]
+detect_folders = []
+
+
+[pulumi]
+format = 'via [$symbol($username@)$stack]($style) '
+version_format = 'v${raw}'
+symbol = ' '
+style = 'bold 5'
+disabled = false
+
+[purescript]
+format = 'via [$symbol($version )]($style)'
+version_format = 'v${raw}'
+symbol = '<=> '
+style = 'bold white'
+disabled = false
+detect_extensions = ['purs']
+detect_files = ['spago.dhall']
+detect_folders = []
+
+
+[red]
+format = 'via [$symbol($version )]($style)'
+version_format = 'v${raw}'
+symbol = '🔺 '
+style = 'red bold'
+disabled = false
+detect_extensions = [
+    'red',
+    'reds',
+]
+detect_files = []
+detect_folders = []
+
+[rlang]
+format = 'via [$symbol($version )]($style)'
+version_format = 'v${raw}'
+style = 'blue bold'
+symbol = '📐 '
+disabled = false
+detect_extensions = [
+    'R',
+    'Rd',
+    'Rmd',
+    'Rproj',
+    'Rsx',
+]
+detect_files = ['.Rprofile']
+detect_folders = ['.Rproj.user']
+
+
+[scala]
+format = 'via [$symbol($version )]($style)'
+version_format = 'v${raw}'
+disabled = false
+style = 'red bold'
+symbol = '🆂 '
+detect_extensions = [
+    'sbt',
+    'scala',
+]
+detect_files = [
+    '.scalaenv',
+    '.sbtenv',
+    'build.sbt',
+]
+detect_folders = ['.metals']
+
+[shlvl]
+threshold = 2
+format = '[$symbol$shlvl]($style) '
+symbol = '↕️  '
+repeat = false
+style = 'bold yellow'
+disabled = false
+
+[singularity]
+symbol = ''
+format = '[$symbol\[$env\]]($style) '
+style = 'blue bold dimmed'
+disabled = false
+
+[swift]
+format = 'via [$symbol($version )]($style)'
+version_format = 'v${raw}'
+symbol = '🐦 '
+style = 'bold 202'
+disabled = false
+detect_extensions = ['swift']
+detect_files = ['Package.swift']
+detect_folders = []
+
+[terraform]
+format = 'via [$symbol$workspace]($style) '
+version_format = 'v${raw}'
+symbol = '💠 '
+style = 'bold 105'
+disabled = false
+detect_extensions = [
+    'tf',
+    'tfplan',
+    'tfstate',
+]
+detect_files = []
+detect_folders = ['.terraform']
+
+
+[vagrant]
+format = 'via [$symbol($version )]($style)'
+version_format = 'v${raw}'
+symbol = '⍱ '
+style = 'cyan bold'
+disabled = false
+detect_extensions = []
+detect_files = ['Vagrantfile']
+detect_folders = []
+
+[vcsh]
+symbol = ''
+style = 'bold yellow'
+format = 'vcsh [$symbol$repo]($style) '
+disabled = false
+
+[vlang]
+format = 'via [$symbol($version )]($style)'
+version_format = 'v${raw}'
+symbol = 'V '
+style = 'blue bold'
+disabled = false
+detect_extensions = ['v']
+detect_files = [
+    'v.mod',
+    'vpkg.json',
+    '.vpkg-lock.json',
+]
+detect_folders = []
+
+[zig]
+format = 'via [$symbol($version )]($style)'
+version_format = 'v${raw}'
+symbol = '↯ '
+style = 'bold yellow'
+disabled = false
+detect_extensions = ['zig']
+detect_files = []
+detect_folders = []
+

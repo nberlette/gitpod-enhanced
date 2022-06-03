@@ -1,0 +1,433 @@
+#!/usr/bin/env bash
+
+## ------------------------------------------------------------------------ ##
+##  .functions                               Nicholas Berlette, 2022-05-21  ##
+## ------------------------------------------------------------------------ ##
+##  https://github.com/nberlette/dotfiles/blob/main/.functions              ##
+## ------------------------------------------------------------------------ ##
+
+# helper function for printing colorful status messages to the terminal
+function __status() {
+  local label color rst
+  label="INFO"
+  (($# > 1)) && {
+    label="$(echo -n "$1" | tr '[:lower:]' '[:upper:]')"
+    shift
+  }
+  rst="$(tput sgr0)"
+  if [[ "$label" =~ ^(FAIL(URE)?|ERR(OR)?|FATAL|CRITICAL|EXCEPT(ION)?|THROWN?|FAULT)$ ]]; then
+    color="$(osc 48 2 230 0 0 && wht)"
+    printf "${color-} %s ${rst-} %s\\n" "$label" "$*" 1>&2
+    return 1
+  elif [[ "$label" =~ ^(SUCCE(EDED|SS)|OK(AY)?|DONE|COMPLETED?|FINISH(ED)?|GOOD|GREAT)$ ]]; then
+    color="$(hex2rgb '#11dd22' && wht)"
+    printf "${color-} %s ${rst-} %s\\n" "$label" "$*" 2>&1
+    return 0
+  elif [[ "$label" =~ ^(WARN(ING)?|IMPORTANT|NON[-]?FATAL|CONT(INUING)?)$ ]]; then
+    color="$(hex2rgb '#dd2211' && wht)"
+    printf "${color-} %s ${rst-} %s\\n" "$label" "$*" 1>&2
+    return 1
+  else
+    color="$(cyn_b && blk)"
+    printf "${color-} %s ${rst-} %s\\n" "$label" "$*"
+    return 0
+  fi
+}
+alias __print_msg="__status"
+alias status="__status"
+
+function resolve() {
+  local verbose
+  [[ "$1" == "-v" || "$1" == "--verbose" ]] && {
+    verbose=1
+    shift
+  }
+  if [ -z "$1" ]; then
+
+    cat <<USAGE
+
+$(bold && undl)USAGE$(reset)
+
+  $(bold && hex2rgb 8cc055)resolve$(reset) $(dark)[options]$(reset) $(ital && hex2rgb 8dddff)command...$(reset)
+
+$(bold && undl)SUMMARY$(reset)
+
+  Attempts to resolve the given command to an absolute path.
+  Similar to $(ital && bold && cyn)command -v$(reset) and $(ital && bold && cyn)command -v$(reset) in terms of functionality.
+
+  In silent mode it returns 0 if found, or 1 if not found.
+  If the flags $(ital && bold && ylw)--verbose$(reset) or $(ital && bold && ylw)-v$(reset) are provided, it will print
+  the resolved path to stdout (if any).
+
+$(bold && undl)OPTIONS$(reset)
+
+  $(ital && bold && ylw)-v, --verbose$(reset)         prints command's absolute path to stdout
+
+USAGE
+
+    return 1
+  else
+    if [ -n "$verbose" ]; then
+      command -v command -v &>/dev/null && command -v "$@" 2>&1 || \command -V "$@" 2>&1
+    else
+      command -v command -v &>/dev/null && return 0 || return 1
+      return $?
+    fi
+  fi
+}
+
+# Simple calculator
+function calc() {
+  local result=""
+  result="$(printf "scale=10;%s\\n" "$*" | bc --mathlib | tr -d '\\\n')"
+  #      └─ default (when `--mathlib` is used) is 20
+
+  if [[ "$result" == *.* ]]; then
+    # improve the output for decimal numbers
+    # add "0" for cases like ".5"
+    # add "0" for cases like "-.5"
+    # remove trailing zeros
+    printf "%s" "$result" |
+      sed -e 's/^\./0./' \
+        -e 's/^-\./-0./' \
+        -e 's/0*$//;s/\.$//'
+  else
+    printf "%s" "$result"
+  fi
+  printf "\\n"
+}
+
+# Pipe my public key to my clipboard.
+function pbkey() {
+  local key="${1:-id_rsa4096.pub}"
+  # shellcheck disable=SC2086
+  cat ~/.ssh/$key | pbcopy | success "The key named '${key-}' was copied to your clipboard." &&
+    return 0
+  return 1
+}
+
+# jq functions for da jsonz
+if command -v jq &>/dev/null; then
+  function pkgjson() {
+    jq "${1:-.}" "${2:-./package.json}"
+  }
+  function quote() {
+    jq -R '.' "${1:-.}"
+  }
+fi
+
+# GitHub CLI Helpers
+if command -v gh &>/dev/null; then
+  function gists() {
+    gh gist list -L "${1:-100}"
+  }
+  function gist() {
+    if (($# > 0)); then
+      gh gist "$@"
+    else
+      gh gist view
+    fi
+  }
+fi
+
+# super hacky "fix" for signing git commits.
+# just use "commit" or "git-commit" instead of "git commit", and this will attempt a verified commit.
+# if it fails, it will prompt you to unlock your gpg-key and try again.
+# if that fails... I guess you're screwed, pal.
+function commit() {
+  git commit --gpg-sign "$@" 2>/dev/null || {
+    (echo "" | gpg --clear-sign --pinentry-mode loopback >/dev/null) &&
+      status "important" "GPG is ready to sign commits. Attempting signature..." &&
+      git commit --gpg-sign "$@"
+  }
+}
+alias "git-commit"="commit"
+
+# Create a new directory and enter it
+function mkd() {
+  \command mkdir -p "$@"
+  \command cd "$@" || exit
+}
+
+# Make a temporary directory and enter it
+function tmpd() {
+  local dir
+  if [ $# -eq 0 ]; then dir=$(mktemp -d); else dir=$(mktemp -d -t "${1}.XXXXXXXXXX"); fi
+  \command cd "$dir" || exit
+}
+
+# Create a .tar.gz archive, using `zopfli`, `pigz` or `gzip` for compression
+function targz() {
+  local tmpFile="${1%/}.tar"
+  tar -cvf "${tmpFile}" --exclude=".DS_Store" "${1}" || return 1
+
+  size=$(
+    stat -f"%z" "${tmpFile}" 2>/dev/null # OS X `stat`
+    stat -c"%s" "${tmpFile}" 2>/dev/null # GNU `stat`
+  )
+
+  local cmd=""
+  if ((size < 52428800)) && hash zopfli 2>/dev/null; then
+    # the .tar file is smaller than 50 MB and Zopfli is available; use it
+    cmd="zopfli"
+  else
+    if hash pigz 2>/dev/null; then
+      cmd="pigz"
+    else
+      cmd="gzip"
+    fi
+  fi
+
+  echo "Compressing .tar using \`${cmd}\`…"
+  "${cmd}" -v "${tmpFile}" || return 1
+  [ -f "${tmpFile}" ] && rm "${tmpFile}"
+  echo "${tmpFile}.gz created successfully."
+}
+
+# Determine size of a file or total size of a directory
+function fs() {
+  if du -b /dev/null &>/dev/null; then
+    local arg=-sbhLc
+  else
+    local arg=-shLc
+  fi
+  # shellcheck disable=SC2199
+  if [ -n "$*" ]; then du "$arg" -- "$@"; else du "$arg" -- .[^.]* *; fi
+}
+
+# Use Git’s colored diff when available
+function gitdiff() {
+  local DIFF_OPTIONS="--color=auto --side-by-side"
+
+  if command -v git &>/dev/null; then
+    git diff "$DIFF_OPTIONS" --no-index --color-words "$@"
+  else
+    diff "$DIFF_OPTIONS" --color-words "$@"
+  fi
+}
+alias diff=gitdiff
+
+# Create a data URL from a file
+function dataurl() {
+  local arg nocopy mimeType charSet data verbose
+  nocopy=0
+  verbose=0
+  mimeType=""
+  charSet="utf-8"
+
+  while (($# > 0)); do
+    arg="$(echo -n "${1-}" | tr '[:lower:]' '[:upper:]')"
+    case "$arg" in
+    # copy to clipboard
+    -c | --copy)
+      nocopy=0
+      shift
+      ;;
+    # do not copy to clipboard
+    -C | --no-copy)
+      nocopy=1
+      shift
+      ;;
+    # user supplied mime-type
+    -m | -t | --mime | --type)
+      [ -n "${2-}" ] && {
+        mimeType="${2-}"
+        shift
+      }
+      shift
+      ;;
+      # verbosity
+    -[Vv] | --verbose)
+      verbose=1
+      shift
+      ;;
+    esac # case
+
+    # infer the mime type otherwise
+    if [ -z "$mimeType" ]; then
+      if [ -f "$1" ]; then
+        mimeType=$(file -b --mime-type "$1")
+      elif [[ -d "$1" ]]; then
+        [ "$verbose" = 1 ] && echo "Cannot coerce a directory into a file."
+        return 1
+      fi
+    fi
+    continue
+  done
+
+  # shellcheck disable=SC2002
+  printf -v data "data:%s;%sbase64,%s" "${mimeType:-"text/plain"}" "${charSet:+"charset=$charSet;"}" "$(cat "$1" | base64 | tr -d '\n')"
+  if [ -z "$data" ]; then
+    echo "Failed constructing the dataurl string."
+    return 2
+  fi
+
+  if [ "$nocopy" = 1 ]; then
+    echo -n "$data"
+    return 0
+  fi
+
+  echo -n "$data" | pbcopy 2>/dev/null && {
+    [ "$verbose" = 1 ] && echo "Created dataurl and copied to clipboard."
+    return 0
+  } || echo -n "$data"
+  return 0
+}
+
+# Start an HTTP server from a directory, optionally specifying the port
+function server() {
+  local port="${1:-8000}"
+  sleep 1 && open "http://localhost:${port}/" &
+  # Set the default Content-command -v to `text/plain` instead of `application/octet-stream`
+  # And serve everything as UTF-8 (although not technically correct, this doesn’t break anything for binary files)
+  python -c $'import SimpleHTTPServer;\nmap = SimpleHTTPServer.SimpleHTTPRequestHandler.extensions_map;\nmap[""] = "text/plain";\nfor key, value in map.items():\n\tmap[key] = value + ";charset=UTF-8";\nSimpleHTTPServer.test();' "$port"
+}
+
+# Compare original and gzipped file size
+function gz() {
+  local origsize gzipsize ratio
+  origsize=$(wc -c <"$1")
+  gzipsize=$(gzip -c "$1" | wc -c)
+  ratio=$(echo "$gzipsize * 100 / $origsize" | bc -l)
+  printf "orig: %d bytes\\n" "$origsize"
+  printf "gzip: %d bytes (%2.2f%%)\\n" "$gzipsize" "$ratio"
+}
+
+# Run `dig` and display the most useful info
+function digga() {
+  dig +nocmd "$1" any +multiline +noall +answer
+}
+
+# Query Wikipedia via console over DNS
+function mwiki() {
+  dig +short txt "$*".wp.dg.cx
+}
+
+# UTF-8-encode a string of Unicode symbols
+function escape() {
+  local args
+  mapfile -t args < <(printf "%s" "$*" | xxd -p -c1 -u)
+  printf "\\\\x%s" "${args[@]}"
+  # print a newline unless we’re piping the output to another program
+  if [ -t 1 ]; then
+    echo "" # newline
+  fi
+}
+
+# Decode \x{ABCD}-style Unicode escape sequences
+function unidecode() {
+  perl -e "binmode(STDOUT, ':utf8'); print \"$*\""
+  # print a newline unless we’re piping the output to another program
+  if [ -t 1 ]; then
+    echo "" # newline
+  fi
+}
+
+# Get a character’s Unicode code point
+function codepoint() {
+  perl -e "use utf8; print sprintf('U+%04X', ord(\"$*\"))"
+  # print a newline unless we’re piping the output to another program
+  if [ -t 1 ]; then
+    echo "" # newline
+  fi
+}
+
+# `v` with no arguments opens the current directory in Vim, otherwise opens the
+# given location
+function v() {
+  if [ $# -eq 0 ]; then
+    $(command -v nvim 2>/dev/null || command -v vim 2>/dev/null) .
+  else
+    $(command -v nvim 2>/dev/null || command -v vim 2>/dev/null) "$@"
+  fi
+}
+
+# `o` with no arguments opens the current directory, otherwise opens the given
+# location
+function o() {
+  if (($# > 0)); then
+    open "$@" &>/dev/null
+  else
+    open . &>/dev/null
+  fi
+}
+
+# `l` integrates file-detection with `ls`. If you use `l` on a file rather than a folder, its automatically opened with its respective editor.
+function l() {
+  local path cmd
+  path=.
+  cmd=less
+
+  if (($# > 0)); then
+    if [[ "$1" =~ ^[-]{0,2}((vs)?c(ode)?|vs?)$ ]]; then
+      cmd='code'
+      shift 1
+    elif [[ "$1" =~ ^[-]{0,2}(p(rint)?|cat)$ ]]; then
+      cmd='cat'
+      shift 1
+    elif [[ "$1" =~ ^[-]{0,2}(less|more|nvim|vim)$ ]]; then
+      cmd="${BASH_REMATCH[1]:-less}"
+      shift 1
+    elif [[ "$1" =~ ^[-]{0,2}(o(pen)?)$ ]]; then
+      cmd='open'
+      shift 1
+    fi
+    [ -e "$1" ] && {
+      path="${1-}"
+      shift 1
+    }
+  fi
+  if [ -d "${path:-.}" ]; then
+    \command ls -FAgoHhksG "$@" "${path:-.}"
+  elif [ -r "${path-}" ] && [ -f "${path-}" ]; then
+    ${cmd:-less} "$@" "${path:-.}"
+  fi
+}
+
+# `tre` is a shorthand for `tree` with hidden files and color enabled, ignoring
+# the `.git` directory, listing directories first. The output gets piped into
+# `less` with options to preserve color and line numbers, unless the output is
+# small enough for one screen.
+function tre() {
+  tree -aC -I '.git' --dirsfirst "$@" | less -FRNX
+}
+
+# Get colors in manual pages
+function __mancolors() {
+  env \
+    LESS_TERMCAP_mb="$(printf '\e[1;31m')" \
+    LESS_TERMCAP_md="$(printf '\e[1;31m')" \
+    LESS_TERMCAP_me="$(printf '\e[0m')" \
+    LESS_TERMCAP_se="$(printf '\e[0m')" \
+    LESS_TERMCAP_so="$(printf '\e[1;44;33m')" \
+    LESS_TERMCAP_ue="$(printf '\e[0m')" \
+    LESS_TERMCAP_us="$(printf '\e[1;32m')" \
+    man "$@"
+}
+alias man=__mancolors
+
+function __lesscolors() {
+  env \
+    LESS_TERMCAP_mb="$(printf '\e[1;31m')" \
+    LESS_TERMCAP_md="$(printf '\e[1;31m')" \
+    LESS_TERMCAP_me="$(printf '\e[0m')" \
+    LESS_TERMCAP_se="$(printf '\e[0m')" \
+    LESS_TERMCAP_so="$(printf '\e[1;44;33m')" \
+    LESS_TERMCAP_ue="$(printf '\e[0m')" \
+    LESS_TERMCAP_us="$(printf '\e[1;32m')" \
+    less "$@"
+}
+alias less=__lesscolors
+
+function __morecolors() {
+  env \
+    LESS_TERMCAP_mb="$(printf '\e[1;31m')" \
+    LESS_TERMCAP_md="$(printf '\e[1;31m')" \
+    LESS_TERMCAP_me="$(printf '\e[0m')" \
+    LESS_TERMCAP_se="$(printf '\e[0m')" \
+    LESS_TERMCAP_so="$(printf '\e[1;44;33m')" \
+    LESS_TERMCAP_ue="$(printf '\e[0m')" \
+    LESS_TERMCAP_us="$(printf '\e[1;32m')" \
+    more --use-color "$@"
+}
+alias more=__morecolors

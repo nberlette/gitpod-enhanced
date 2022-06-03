@@ -1,0 +1,10 @@
+[bash]
+  showUntrackedFiles = true
+  showDirtyState = true
+  showSparseState = true
+  showColorHints = true
+  showStashState = true
+  showUpstream = "auto verbose"
+  hideIfPwdIgnored = false
+
+# vim: set filetype=gitconfig ts=2 sw=2 tw=0 noet :

@@ -1,0 +1,62 @@
+#!/usr/bin/env bash
+
+function __fontconvert()
+{
+    local original originalDir originalType newType base dest
+
+    original="$(basename -- "${1-}")"
+    originalDir="$(dirname -- "${1-}")"
+    originalType="$(echo -n "$original" | cut -d. -f2)"
+    newType="${2:-woff2}"
+    base="$(echo -n "$original" | cut -d. -f1)"
+    dest="$(dirname -- "$originalDir")/${newType-}/${base-}.${newType-}"
+
+    mkdir "$(dirname -- "$originalDir")/${newType-}" &>/dev/null
+
+    fontforge -c "open('${originalDir:-.}/${original}').generate('${dest-}')" &>/dev/null \
+      && printf ' ✅  generated %s: %s\n\n' "${newType}" "${dest-}"
+
+    rm -v -i "./${newType-}/${base-}.afm" &> /dev/null
+}
+
+# show the usage page if no args are given, or if passed any derivation of "-h" "--help" "-?" etc
+if [ $# -eq 0 ] || [[ "$1" =~ ^[-]{0,2}(h(elp)?|[?])$ ]]; then
+
+cat<<FONTCONVERTUSAGE
+
+$(printf '\033[1;3m')$(basename "$0")$(tput sgr0) - convert font types from the command line
+
+$(printf '\033[1;4m')USAGE$(tput sgr0)
+
+  \$ $(basename "$0")$(tput sgr0) <$(printf '\033[1;3;4m')input.*$(tput sgr0)> <$(printf '\033[3;4m')otf | ttf | woff | woff2 | ufo | ...$(tput sgr0)>
+
+$(printf '\033[1;4m')REQUIREMENTS$(tput sgr0)
+
+    o Working installs of $(printf '\033[1;3m')fontforge$(printf '\033[0m') and $(printf '\033[1;3m')python$(printf '\033[0;2m')@3.x$(printf '\033[0m') 
+    
+$(printf '\033[1;4m')NOTES$(tput sgr0)
+
+    o Input and output must be supported by $(printf '\033[1;3m')fontforge$(tput sgr0) ($(printf '\033[1;4m')otf$(tput sgr0), $(printf '\033[1;4m')ttf$(tput sgr0), $(printf '\033[1;4m')woff$(tput sgr0), $(printf '\033[1;4m')ufo$(tput sgr0), etc.)
+
+    o $(printf '\033[1;3;4m')$(basename "$0")$(tput sgr0) assumes the input.* font $(printf '\033[2;3m')(argv[1])$(tput sgr0) is in a directory named
+      after its type (i.e. $(printf '\033[4m')./otf$(tput sgr0)); it will output the new fonts into
+      a folder named after the file type you provide $(printf '\033[2;3m')(argv[2])$(tput sgr0)
+
+    o This means if you run: 
+      \$ "$(basename "$0")" "$(printf '\033[3;4m')./otf/font.otf$(tput sgr0)" "$(printf '\033[3;4m')woff2$(tput sgr0)" 
+      ... the output will be "$(printf '\033[3;4m')./woff2/font.woff2$(tput sgr0)"
+
+$(printf '\033[1;4m')LICENSE$(tput sgr0)
+
+    MIT © Nicholas Berlette <$(printf '\033[2;4m')https://github.com/nberlette$(tput sgr0)>
+
+FONTCONVERTUSAGE
+
+else
+    # run the main program
+    __fontconvert "$@"
+fi
+
+unset -f __fontconvert 2>/dev/null
+
+

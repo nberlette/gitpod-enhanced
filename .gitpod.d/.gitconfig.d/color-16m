@@ -1,0 +1,32 @@
+[color]
+	branch      = on
+	diff        = on
+	interactive = on
+	status      = on
+	submodule   = always
+	ui          = true
+
+[color "branch"]
+	current = "#f1c40f reverse"
+	local   = "#f1c40f"
+	remote  = "#2ecc71"
+
+[color "diff"]
+	context    = "#ffffff dim italic"
+	frag       = "#6c71c4"
+	meta       = "#f1c40f"
+	new        = "#2ecc71 bold"
+	old        = "#e74c3c bold"
+	whitespace = "#f22222"
+
+[color "status"]
+	branch    = "#ffffff italic"
+	changed   = "#e74c3c italic"
+	header    = "#858585"
+	nobranch  = "#f22222 #ffffff blink"
+	unmerged  = "#f22222"
+	untracked = "#6c71c4 italic"
+	updated   = "#f1c40f italic"
+
+
+# vim: set filetype=gitconfig ts=2 sw=2 tw=0 noet :

@@ -1,0 +1,110 @@
+#!/usr/bin/env ts-node
+
+/**
+ * @fileoverview Dirty example of recursive directory traversal with TypeScript.
+ * @author @nberlette
+ * @license MIT
+ * @version 1.0.0
+ * @see {https://git.io/readdir-ts}
+ */
+
+import { readdirSync as readdir, readFileSync as readFile } from 'fs';
+import type { PathLike } from 'fs';
+import { basename, resolve, parse, join } from 'path';
+import { argv } from 'process';
+
+declare namespace File {
+	export type Name = string;
+	export type Path = PathLike & any;
+	export type Size = string | number | (unknown & any);
+	export type Type = 'folder' | 'file' | 'symlink' | ('unknown' & any);
+	export type Data = any;
+
+	export type Item = {
+		name?: Name;
+		path?: Path;
+		size?: Size;
+		type?: Type;
+		data?: Data;
+	} & { [key: string]: any };
+}
+
+const stringify = (data: any, indent = 2): string => JSON.stringify(data, null, indent);
+
+const DATA_PREVIEW_LENGTH = 256;
+const DISPLAY_PREVIEW_DATA = false;
+
+/**
+ * Convert a file size in bytes to a human readable string.
+ * @param {any} data - The file size in bytes.
+ * @param {number} [d=2] - The number of bytes per unit (KiB = 1024, KB = 1000)
+ * @returns {FileSize}
+ */
+function fileSize(data: any, d = 1024): File.Size {
+	const i: any = Math.floor(Math.log(data) / Math.log(d));
+	const size: any = (data / Math.pow(d, i)).toFixed(2);
+	const units: any = ['B', 'kB', 'MB', 'GB', 'TB', 'PB'][i] || 'B';
+	return `${size * 1} ${units}`;
+}
+
+/**
+ * The function that recursively traverses the directory tree.
+ *
+ * @param {String} _dir - The directory to read.
+ * @returns {FileRecord[]}
+ */
+function ls(_dir = './'): File.Item[] {
+	const dir: File.Path = resolve(_dir);
+
+	const items: File.Item[] = Array.from(
+		readdir(dir, {
+			withFileTypes: true,
+			encoding: 'utf8',
+		}),
+		(file: any): any | any[] => {
+			//const { name, isDirectory, isFile, isSymbolicLink } = file;
+
+			const path: File.Path = resolve(dir, basename(file.name));
+			let data: File.Data;
+			let encoded: File.Data;
+			let size: File.Size;
+			let type: File.Type;
+
+			if (file.isDirectory()) {
+				type = 'folder';
+				data = ls(join(dir, file.name));
+				encoded = Array.from(data);
+				size = encoded.length;
+			} else if (file.isFile()) {
+				type = 'file';
+				data = Buffer.from(readFile(path, 'utf8'));
+				encoded = data.toString('base64');
+				size = fileSize(Buffer.byteLength(data));
+			} else {
+				type = file.isSymbolicLink() ? 'symlink' : 'unknown';
+				data = 'unknown';
+				encoded = 'unknown';
+				size = fileSize(data.length);
+			}
+
+			const response: File.Item = {
+				name: basename(file.name),
+				path: path,
+				size: file.isDirectory() ? data.length : fileSize(data.length),
+				type: file.isDirectory() ? 'folder' : 'file',
+			};
+			if (DISPLAY_PREVIEW_DATA) {
+				response.data =
+					encoded.length > DATA_PREVIEW_LENGTH
+						? encoded.slice(0, DATA_PREVIEW_LENGTH) + `…+${fileSize(data.length - DATA_PREVIEW_LENGTH)}`
+						: encoded;
+			}
+			return response;
+		}
+	);
+	return items;
+}
+
+if (process.argv.length > 1) {
+	console.log(stringify(ls(process.argv[2] || '.')));
+}

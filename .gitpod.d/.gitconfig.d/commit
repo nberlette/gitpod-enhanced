@@ -1,0 +1,10 @@
+[commit]
+	gpgsign = true
+
+[tag]
+	gpgsign = true
+
+[gpg]
+	program = /usr/local/bin/gpg
+
+# vim: set filetype=gitconfig ts=2 sw=2 tw=0 noet :

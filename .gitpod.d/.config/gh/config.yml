@@ -1,0 +1,68 @@
+# What protocol to use when performing git operations.
+git_protocol: https # ssh | https
+# What editor gh should run when creating issues, pull requests, etc.
+# If blank, falls back to environment variable $EDITOR
+editor: nvim
+# When to interactively prompt. This is a global config that cannot be overridden by hostname.
+prompt: enabled # enabled | disabled
+# A pager program to send command output to, e.g. "less".
+# Set the value to "cat" to disable the pager.
+pager: less
+# Aliases allow you to create nicknames for gh commands
+# Note: do not include "gh" prefix in the aliased command - it is always assumed.
+aliases:
+  h: help
+  '?': help
+  # pull requests
+  co: pr checkout
+  # aliases
+  aliases: alias list
+  al: alias list
+  as: alias set
+  # authentication
+  login: auth login
+  logout: auth logout
+  whoami: auth status
+  # gists
+  gc: gist create
+  ge: gist edit
+  gl: gist list -L 100
+  gv: gist view
+  # repositories
+  nr: repo create
+  clone: repo clone
+  fork: repo fork
+  rarch: repo archive
+  new: repo create
+  delete: repo delete
+  edit: repo edit
+  deploy: repo deploy-key
+  repos: repo list
+  rename: repo rename
+  sync: repo sync
+  view: repo view
+  # secrets
+  sec: secret
+  # GPG keys
+  gpg: gpg-key
+  gpgk: gpg-key list
+  keys: gpg-key list
+  # SSH keys
+  ssh: ssh-key
+  sshk: ssh-key list
+  # extensions
+  x: extension
+  nx: extension create
+  xc: extension create
+  xi: extension install
+  xl: extension list
+  xr: extension remove
+  xu: extension upgrade
+  # extensions -> markdown-preview
+  md: markdown-preview
+  mdp: markdown-preview
+
+# The path to a unix socket through which send HTTP connections. If blank, HTTP traffic will be handled by net/http.DefaultTransport.
+http_unix_socket:
+# What web browser gh should use when opening URLs. If blank, will refer to environment.
+browser: ""

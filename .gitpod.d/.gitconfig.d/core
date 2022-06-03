@@ -1,0 +1,12 @@
+[core]
+	pager = cat
+
+[credential "https://github.com"]
+	helper =
+	helper = !/usr/local/bin/gh auth git-credential
+
+[credential "https://gist.github.com"]
+	helper =
+	helper = !/usr/local/bin/gh auth git-credential
+
+# vim: set filetype=gitconfig ts=2 sw=2 tw=0 noet :

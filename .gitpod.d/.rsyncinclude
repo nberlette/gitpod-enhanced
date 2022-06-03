@@ -1,0 +1,50 @@
+# .bashrc.d/ - all files in this directory will be sourced at runtime by .bashrc
+# inspired by the default gitpod .bashrc in gitpod/workspace-full image
+.bashrc.d/
+.bashrc.d/*.sh
+
+# .bin/ - binary programs
+.bin/
+.bin/*
+
+# .gnupg - format inspired by <https://github.com/jessfraz/dotfiles>
+.gnupg/
+.gnupg/*.conf
+
+# .gitconfig.d - format inspired by <https://github.com/kmalinich/kdm-bash-env>
+.gitconfig.d/
+.gitconfig.d/*
+.gitconfig
+.gitignore
+
+# .config/ files (YAML and TOML, so far)
+.config/
+.config/gh/config.yml
+.config/starship.toml
+
+# bash environment
+.bash*
+.hushlogin
+.inputrc
+.path
+.exports
+.extra
+.functions
+
+# .Brewfile
+.Brewfile
+./*/.Brewfile
+
+# .dircolors
+# Used by (dircolors -b) to set the color of the ls output.
+.dircolors
+
+# editorconfig files (overrides prettier and eslint configurations!)
+.editorconfig
+
+# .nirc - config file for @antfu/ni and @brlt/n command line package
+.nirc
+
+# .npmrc - opinionated configurations for npm, yarn, and pnpm
+# (node package management command line tools)
+.npmrc

@@ -1,0 +1,17 @@
+#!/bin/bash
+len=64
+raw=$(date +%s)
+alg=256
+
+if [ "$#" -eq 1 ]; then
+	[ -e "$1" ] && raw=$(cat "${1-}") && shift
+	len=${1:- 64} && shift
+fi
+if [ "$#" -ge 2 ]; then
+	if [ "${1-}" = "-f" ] && [ -e "${2-}" ]; then
+		raw=$(cat "${2-}") && shift 2
+	fi
+	[ "${1-}" = "-a" ] && alg="${2:-'256'}" && shift 2
+fi
+
+(echo "$raw" | shasum -a ${alg:-'256'} | cut -d' ' -f1 | head -c ${len:-'64'} && echo) || exit 1

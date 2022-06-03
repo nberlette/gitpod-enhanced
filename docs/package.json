@@ -1,0 +1,54 @@
+{
+  "name": "gitpod-enhanced-docs",
+  "version": "0.0.2",
+  "license": "MIT",
+  "author": "Nicholas Berlette <nick@berlette.com>",
+  "private": true,
+  "packageManager": "pnpm@7.1.7",
+  "homepage": "https://gitpod.tk",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/nberlette/gitpod-enhanced",
+    "directory": "docs"
+  },
+  "readme": "https://github.com/nberlette/gitpod-enhanced#readme",
+  "bugs": "https://github.com/nberlette/gitpod-enhanced/issues",
+  "scripts": {
+    "lint": "eslint .",
+    "lint:fix": "eslint --fix .",
+    "format": "prettier --ignore-path=.gitignore -c .",
+    "format:fix": "prettier --ignore-path=.gitignore -w .",
+    "dev": "vitepress dev .",
+    "build": "vitepress build .",
+    "serve": "vitepress serve . --port ${PORT:-3001}",
+    "prebuild": "pnpm format:fix; pnpm lint:fix; pnpm lint"
+  },
+  "prettier": "@brlt/prettier",
+  "eslintConfig": {
+    "extends": [
+      "@brlt"
+    ]
+  },
+  "devDependencies": {
+    "@algolia/client-search": "^4.9.1",
+    "@brlt/eslint-config": "0.0.4",
+    "@brlt/n": "0.1.1",
+    "@brlt/prettier": "1.8.2",
+    "@typehaus/metropolis": "^12.0.0-next.7",
+    "eslint": "8.16.0",
+    "prettier": "2.6.2",
+    "typescript": "4.7.3",
+    "vitepress": "1.0.0-alpha.1"
+  },
+  "pnpm": {
+    "peerDependencyRules": {
+      "ignoreMissing": [
+        "@types/react",
+        "react",
+        "react-dom",
+        "vite",
+        "vue"
+      ]
+    }
+  }
+}

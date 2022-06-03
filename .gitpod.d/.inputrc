@@ -1,0 +1,20 @@
+# .inputrc reference: https://ss64.com/bash/syntax-inputrc.html
+
+set completion-ignore-case on
+set show-all-if-ambiguous on
+set mark-symlinked-directories on
+set match-hidden-files on
+set page-completions on
+set completion-query-items 200
+set visible-stats on
+set skip-completed-text on
+set input-meta on
+set output-meta on
+set convert-meta off
+set print-completions-horizontally on
+
+"\e[A": history-search-backward
+"\e[B": history-search-forward
+"\e[3;3~": kill-word
+"\e[1;5D": backward-word
+"\e[1;5C": forward-word

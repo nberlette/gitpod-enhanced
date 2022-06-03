@@ -1,0 +1,12 @@
+#!/usr/bin/env bash
+
+function __osc() {
+  local esc=033 str ifs=$IFS;
+  IFS=';'; str="$*"; IFS=$ifs;
+	printf '\033['${str:-0}m
+}
+
+if [[ "${BASH_SOURCE[0]}" == "${0}" ]] && (($# > 0)); then
+  # run the script
+  __osc "$@"
+fi

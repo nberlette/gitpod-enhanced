@@ -1,0 +1,89 @@
+[alias]
+	a  = add
+	af = add --force
+
+	b   = branch
+	ba  = branch --all
+	bd  = branch --delete
+	bdd = branch --delete --force
+	bm  = branch --merged
+	bnm = branch --no-merged
+
+	cl  = clone --jobs 8 --recursive
+	cls = clone --jobs 8 --recursive --depth 1 --shallow-submodules
+
+	co  = checkout
+	cob = checkout -b
+	com = checkout master
+
+	c   = commit
+	ca  = commit --all
+	cam = commit --all -m
+
+	cp = "!_git_cp() { git commit --all \"--message=${1-Update}\"; }; _git_cp"
+
+	d  = diff --color=auto --ignore-space-change --ignore-blank-lines --color-moved-ws=ignore-all-space --ws-error-highlight=all
+	ds = describe
+
+	# Delete any branches that have been merged into the current branch
+	# See also: https://gist.github.com/robmiller/5133264
+	dm = "!_git_dm() { git up && git branch --color=never --format '%(refname:lstrip=2)' --merged | grep -v \"^$(git symbolic-ref --short HEAD)$\" | xargs -n 1 git branch --delete 2> /dev/null; }; _git_dm"
+
+	f = fetch --all --prune
+
+	find = "!_git_find() { BRANCH=\"$(git get-branch 2> /dev/null)\"; [[ -z "${BRANCH}" ]] && echo \"Error : No branch detected\" && return; git ls-tree -r --name-only \"${BRANCH}\" | grep -E \"${1}\"; }; _git_find"
+
+	# Fix upstream
+	fu = "!_git_fu() { BRANCH=\"$(git get-branch 2> /dev/null)\"; [[ -z "${BRANCH}" ]] && echo \"Error : No branch detected\" && return; BRANCH_UPSTREAM=\"origin/${BRANCH}\"; git branch \"--set-upstream-to=${BRANCH_UPSTREAM}\" \"${BRANCH}\"; echo \"Set upstream to\" \"${BRANCH_UPSTREAM}\"; }; _git_fu"
+
+	get-branch  = symbolic-ref --short HEAD
+	get-commit  = rev-parse HEAD
+	get-gitdir  = rev-parse --git-dir
+	get-repodir = rev-parse --show-toplevel
+	get-tags    = describe --tags
+	get-url     = config remote.origin.url
+
+	l = "!_git_l() { git log \"--max-count=${1-25}\" --graph --oneline; }; _git_l"
+
+	ll = "!_git_ll() { git log \"--max-count=${1-25}\" --date='format:%F %R:%S' \"--pretty=tformat:[%C(yellow)%h%C(reset)] [%C(blue)%><(13)%ar%C(reset)] [%C(red)%><(28)%an%C(reset)] %C(reset)%s\"; }; _git_ll"
+
+	# Requires GitHub CLI (https://hub.github.com/)
+	llu = "!_git_llu() { COMMIT_URL=\"$(hub browse --url)/commit\"; git log \"--max-count=${1-25}\" --date='format:%F %R:%S' \"--pretty=tformat:[%C(yellow)${COMMIT_URL}/%h%C(reset)] [%C(blue)%><(13)%ar%C(reset)] [%C(red)%><(28)%an%C(reset)] %C(reset)%s\"; }; _git_llu"
+
+	m = merge
+
+	# Requires GitHub CLI (https://hub.github.com/)
+	o = browse
+
+	p = pull --prune
+
+	plm = "!_git_plm() { git f; git co master; git pp; git s; }; _git_plm"
+	plu = "!_git_plu() { git f; git co master; git up; git s; }; _git_plu"
+
+	push = push --follow-tags
+
+	ps   = push
+	pso  = push           origin
+	psvo = push --verbose origin
+
+	# Requires GitHub CLI (https://hub.github.com/)
+	pr = !bash -c 'hub pull-request $0 $@'
+	# pr = "!_git_pr() { hub pull-request $0 $@; }; _git_pr"
+
+	prune = fetch --all --prune
+
+	r  = reset
+	rh = reset --hard HEAD
+
+	s = status
+
+	sm   = submodule
+	smf  = submodule foreach --recursive
+	smi  = submodule update  --recursive --init
+	smup = "!_git_smup() { git f; git up; git smf 'BAR=\"=---------------------------------------------=\"; echo \"${BAR}\"; git plu; echo \"${BAR}\\n\\n\"'; }; _git_smup"
+
+	undo = checkout --
+
+	up = p --rebase
+
+# vim: set filetype=gitconfig ts=2 sw=2 tw=0 noet :

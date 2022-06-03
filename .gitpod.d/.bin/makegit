@@ -1,0 +1,291 @@
+#!/usr/bin/env bash
+
+function create_git_license() {
+	[[ "${1}" == "-t" && "${#2}" -gt "0" ]] \
+		&& {
+			local title=${2:-'MIT License'}
+			shift 2
+		} \
+		|| local title='MIT License'
+	[[ "${1}" == "-y" && "${#2}" -gt "0" ]] \
+		&& {
+			local year=${2:-$(date +%Y)}
+			shift 2
+		} \
+		|| local year=$(date +%Y)
+	[[ "${1}" == "-n" && "${#2}" -gt "0" ]] \
+		&& {
+			local author=${2:-$USER}
+			shift 2
+		} \
+		|| local author=$USER
+	(
+		cat <<- ENDOFLICENSE
+			${title}
+
+			Copyright (c) ${year} ${author}
+
+			Permission is hereby granted, free of charge, to any person obtaining a copy
+			of this software and associated documentation files (the "Software"), to deal
+			in the Software without restriction, including without limitation the rights
+			to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+			copies of the Software, and to permit persons to whom the Software is
+			furnished to do so, subject to the following conditions:
+
+			The above copyright notice and this permission notice shall be included in all
+			copies or substantial portions of the Software.
+
+			THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+			IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+			FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+			AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+			LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+			OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+			SOFTWARE.
+
+		ENDOFLICENSE
+	) > 'LICENSE'
+}
+
+function create_gitignore() {
+	(
+		cat <<- ENDOFGITIGNORE
+			logs
+			*.log
+			npm-debug.log*
+			yarn-debug.log*
+			yarn-error.log*
+			lerna-debug.log*
+			report.[0-9]*.[0-9]*.[0-9]*.[0-9]*.json
+			pids
+			*.pid
+			*.seed
+			*.pid.lock
+			lib-cov
+			coverage
+			*.lcov
+			.nyc_output
+			.grunt
+			bower_components
+			.lock-wscript
+			build/Release
+			node_modules/
+			jspm_packages/
+			typings/
+			*.tsbuildinfo
+			.npm
+			.eslintcache
+			.rpt2_cache/
+			.rts2_cache_cjs/
+			.rts2_cache_es/
+			.rts2_cache_umd/
+			.node_repl_history
+			*.tgz
+			.yarn-integrity
+			.env
+			.env.test
+			.cache
+			.next
+			.nuxt
+			dist
+			.cache/
+			.vuepress/dist
+			.serverless/
+			.fusebox/
+			.dynamodb/
+			.amplify/
+			.tern-port
+			.DS_Store
+
+		ENDOFGITIGNORE
+	) > '.gitignore'
+}
+
+function ginit() {
+	[[ "${1}X" != "X" ]] && [[ -d "${1}" ]] \
+		&& {
+			cd "$1"
+			shift 1
+		} \
+		|| {
+			$(mkdir -p "$1" > /dev/null 2>&1) && cd "$1"
+			shift 1
+		}
+
+	local repoName=${1:-$(basename -- $(pwd))}
+	echo "# ${repoName}" >> 'README.md'
+
+	author="Nicholas Berlette <nick@berlette.com>"
+	echo "Default author info: $author"
+
+	if [[ ${1,,} != "-y" ]]; then
+		read -p "Write to LICENSE? (y[es]/new author): " choice_author
+		case "$choice_author" in
+			y* | Y*)
+				continue
+				;;
+			*)
+				author="$choice_author"
+				;;
+		esac
+	fi
+
+	create_git_license -n $author \
+		&& echo "[x] created LICENSE" \
+		&& echo -e "\n"
+
+	create_gitignore \
+		&& echo "[x] created .gitignore" \
+		&& echo -e "\n"
+
+	git init \
+		&& echo "[x] git init" \
+		&& echo -e "\n"
+
+	originBranch=master
+	userRepo=nberlette/$repoName
+	originGit="https://github.com/${userRepo}.git"
+
+	if [[ "${1,,}" != "-y" ]]; then
+
+		read -p "> Add entire directory to commit? (y/n): " addchoice
+		case "$addchoice" in
+			y* | Y*)
+				git add . \
+					&& echo "[x] git add ."
+				;;
+			n* | N*)
+				git add 'LICENSE' 'README.md' '.gitignore' \
+					&& echo "[x] git add LICENSE README.md .gitignore"
+				;;
+			*)
+				git add $addchoice
+				;;
+		esac
+		echo -e "\n\n"
+
+		read -p "> Commit message (blank='first commit'): " choice_commit
+		if [[ "${choice_commit}X" == "X" ]]; then
+			commitMsg="first commit"
+		else
+			commitMsg="$choice_commit"
+		fi
+
+		git commit -m "$commitMsg" \
+			&& echo "[x] git commit -m '$commitMsg'"
+
+		echo -e "\n\n"
+		echo "Remote origin: $originGit"
+
+		read -p "> Is this okay? (y[es] or new username/repo)" choice_repo
+		case "$choice_repo" in
+			y* | Y*)
+				continue
+				;;
+			*)
+				repoName=$(basename -- $choice_repo)
+				userRepo="${choice_repo}"
+				originGit="https://github.com/${userRepo}.git"
+
+				echo "> new remote: $originGit"
+				continue
+				;;
+		esac
+		echo -e "\n\n"
+
+		read -p "> Does this repository already exist? (y/n): " choice_exist
+		case "$choice_exist" in
+			y* | Y*)
+				git remote add origin $originGit
+				echo "[x] git remote add origin ${originGit}"
+				;;
+			*)
+				if [[ $(which hub > /dev/null 2>&1) ]]; then
+					createRepoWithHub=1 && continue
+				else
+					echo "[ ] git remote add origin ${originGit}"
+				fi
+				continue
+				;;
+		esac
+		echo -e "\n\n"
+
+		if [[ "${createRepoWithHub}" == "1X" ]]; then
+
+			read -p "> Should this repo be public? (y/n): " choice_public
+			case "$choice_public" in
+				y* | Y*)
+					hub create $userRepo \
+						&& echo "[x] hub create $userRepo"
+					;;
+				n* | N*)
+					hub create -p $userRepo \
+						&& echo "[x] hub create --private $userRepo"
+					;;
+			esac
+
+			originGit="https://github.com/$userRepo.git"
+			git remote add origin $originGit \
+				&& echo "[x] git remote add origin $originGit"
+
+		fi
+		echo -e "\n\n"
+		echo "Branch name: $originBranch"
+
+		read -p "> Is this okay? (y[es]/new name): " choice_branch
+		case "$choice_branch" in
+
+			y* | Y*)
+				git branch -M $originBranch \
+					&& echo "[x] git branch -M $originBranch"
+				;;
+
+			*)
+				originBranch=$choice_branch \
+					&& git branch -M $originBranch \
+					&& echo "[x] git branch -M $originBranch"
+				;;
+
+		esac
+		echo -e "\n\n"
+
+		read -p "> Push $repoName to remote origin $originBranch ? (y/n): " choice_push
+		case "$choice_push" in
+
+			y* | Y*)
+
+				git push -u origin $originBranch \
+					&& echo "[x] git push -u origin $originBranch"
+				;;
+
+			*)
+
+				echo "[ ] git push -u origin main" \
+					&& continue
+				;;
+
+		esac
+		echo -e "\e[38;2;100;255;100m >>> makegit completed \e[0m\n\n"
+
+	else
+
+		git add . \
+			&& echo -e "[x] git add .\n"
+
+		git commit -m "$commitMsg" \
+			&& echo -e "[x] git commit -m \"$commitMsg\"\n"
+
+		git remote add origin $originGit \
+			&& echo -e "[x] git remote add origin $originGit\n"
+
+		git branch -M $originBranch \
+			&& echo -e "[x] git branch -M $originBranch\n"
+
+		git push -u origin $originBranch \
+			&& echo -e "[x] git push -u origin $originBranch\n"
+
+		echo -e "\e[38;2;100;255;100m >>> makegit completed \e[0m\n\n"
+	fi
+}
+
+ginit "${@}"

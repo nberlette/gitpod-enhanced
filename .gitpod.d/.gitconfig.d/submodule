@@ -1,0 +1,6 @@
+[submodule]
+	# Run 16 fetch jobs in parallel when possible
+	fetchJobs = 16
+
+
+# vim: set filetype=gitconfig ts=2 sw=2 tw=0 noet :

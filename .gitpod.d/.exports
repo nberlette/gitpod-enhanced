@@ -1,0 +1,69 @@
+#!/usr/bin/env bash
+
+export TZ="America/Los_Angeles"
+export CLICOLOR=1
+export COLORTERM=$CLICOLOR
+export GPG_TTY=$(tty)
+if command -v tput >&/dev/null; then
+  export LESS_TERMCAP_mb=$(
+    tput bold
+    tput setaf 2
+  )
+  export LESS_TERMCAP_md=$(
+    tput bold
+    tput setaf 6
+  )
+  export LESS_TERMCAP_me=$(tput sgr0)
+  export LESS_TERMCAP_so=$(
+    tput bold
+    tput setaf 3
+    tput setab 4
+  )
+  export LESS_TERMCAP_se=$(
+    tput rmso
+    tput sgr0
+  )
+  export LESS_TERMCAP_us=$(
+    tput smul
+    tput bold
+    tput setaf 7
+  )
+  export LESS_TERMCAP_ue=$(
+    tput rmul
+    tput sgr0
+  )
+  export LESS_TERMCAP_mr=$(tput rev)
+  export LESS_TERMCAP_mh=$(tput dim)
+  export LESS_TERMCAP_ZN=$(tput ssubm)
+  export LESS_TERMCAP_ZV=$(tput rsubm)
+  export LESS_TERMCAP_ZO=$(tput ssupm)
+  export LESS_TERMCAP_ZW=$(tput rsupm)
+  export GROFF_NO_SGR=1
+fi
+export EDITOR=nvim
+export TERMINAL="urxvt"
+export HISTSIZE=50000000
+export HISTFILESIZE=$HISTSIZE
+export HISTCONTROL=ignoredups
+export HISTIGNORE=" *:ls:cd:cd -:pwd:exit:date:* --help:* -h:pony:pony add *:pony update *:pony save *:pony ls:pony ls *"
+export LANG="en_US.UTF-8"
+export LC_ALL="en_US.UTF-8"
+export MANPAGER="less -X"
+export DBUS_SESSION_BUS_ADDRESS
+DBUS_SESSION_BUS_ADDRESS=unix:path=/var/run/user/$(id -u)/bus
+export TODOTXT_DEFAULT_ACTION=ls
+export GDK_SCALE=1.5
+export GDK_DPI_SCALE=0.5
+export QT_DEVICE_PIXEL_RATIO=1.5
+export GO15VENDOREXPERIMENT=1
+export DOCKER_CONTENT_TRUST=1
+export XDG_DATA_DIRS=/usr/share/
+# export PNPM homedir to unify the virtual dependency store
+export PNPM_HOME="${PNPM_HOME:-"$(dirname -- "$(which pnpm)")"}"
+# do not automatically cleanup after installing homebrew packages
+export HOMEBREW_NO_INSTALL_CLEANUP=1
+# do not show env hints during homebrew install process
+export HOMEBREW_NO_ENV_HINTS=1
+
+# tell terminal.app to shut the fuck up about switching the shell to zsh
+export BASH_SILENCE_DEPRECATION_WARNING=1

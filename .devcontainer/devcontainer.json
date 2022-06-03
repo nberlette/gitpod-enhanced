@@ -1,0 +1,66 @@
+// https://aka.ms/devcontainer.json
+{
+	"name": "Bash (Community)",
+	"build": {
+		"dockerfile": "Dockerfile",
+		"args": {
+      // For Apple Silicon (arm64) use Debian 11, Debian 9, Ubuntu 18.04, or Ubuntu 21.04.
+      "VARIANT": "ubuntu-21.04",
+      // Pacific Standard Time (PST) for the timezone
+      "TZ": "America/Los_Angeles"
+      // set other build args here, if you wish...
+    }
+	},
+
+	"customizations": {
+		"vscode": {
+			// *default* container specific settings.json values on container create.
+			"settings": {
+				"terminal.integrated.defaultProfile.linux": "bash",
+        "git.enableCommitSigning": true
+			},
+      // vscode extensions to pre-install at build time
+			"extensions": [
+				"editorconfig.editorconfig",
+				"antfu.vite",
+				"antfu.iconify",
+				"dbaeumer.vscode-eslint",
+				"esbenp.prettier-vscode",
+				"foxundermoon.shell-format",
+				"timonwong.shellcheck",
+				"mads-hartmann.bash-ide-vscode",
+				"rogalmic.bash-debug",
+				"Jacano.vscode-pnpm",
+				"jock.svg",
+				"redhat.vscode-yaml",
+				"eg2.vscode-npm-script",
+				"vsls-contrib.gistfs",
+				"dotiful.dotfiles-syntax-highlighting",
+				"duniul.dircolors",
+				"ms-azuretools.vscode-docker"
+			]
+		}
+	},
+
+	// Use 'forwardPorts' to make a list of ports inside the container available locally.
+	"forwardPorts": [],
+
+	// Use 'postCreateCommand' to run commands after the container is created.
+	"postCreateCommand": "uname -a",
+
+
+
+	// Uncomment to connect as a non-root user. See https://aka.ms/vscode-remote/containers/non-root.
+	// "remoteUser": "vscode",
+	"features": {
+		"terraform": "latest",
+		"git": "os-provided",
+		"github-cli": "latest",
+		"sshd": "latest",
+		"homebrew": "latest",
+		"python": "os-provided",
+		"golang": "latest",
+		"ruby": "3.1",
+		"rust": "latest"
+	}
+}

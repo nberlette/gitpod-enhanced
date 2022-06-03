@@ -1,0 +1,49 @@
+[url "https://github.com/"]
+	insteadOf = "github:"
+
+[url "https://github.com/"]
+	insteadOf = "gh:"
+
+[url "https://npm.pkg.github.com/"]
+	insteadOf = "gpr:"
+
+[url "https://registry.npmjs.com/"]
+	insteadOf = "npm:"
+
+[url "https://registry.yarnpkg.com/"]
+	insteadOf = "yarn:"
+
+[url "https://unpkg.com/"]
+  insteadOf = "unpkg:"
+
+[url "https://cdn.jsdelivr.net/gh/"]
+	insteadOf = "cdn:"
+
+[url "https://cdn.jsdelivr.net/npm/"]     
+	insteadOf = "cdn2:"	
+
+[url "https://git.berlette.com/"]
+	insteadOf = "nb:"
+
+[url "https://git.svelte.run/"]
+	insteadOf = "svr:"
+
+[url "https://git.tutorialfeed.com/"]
+	insteadOf = "tf:"
+
+[url "https://git.flourd.com/"]
+	insteadOf = "fl:"
+
+[url "https://git.junkyard.one/"]
+	insteadOf = "jnk:"
+
+[url "https://git.savejs.com/"]
+	insteadOf = "savejs:"
+
+[url "https://git.sidejs.com/"]
+	insteadOf = "sidejs:"
+
+[url "https://git.bimmer.dev/"]
+	insteadOf = "bmw:"
+
+# vim: set filetype=gitconfig ts=2 sw=2 tw=0 noet :

@@ -1,0 +1,63 @@
+#!/usr/bin/env bash
+shopt -s globstar
+__dirname="$(readlink -- "$(dirname -- "${BASH_SOURCE[0]}")")"
+if ! type -t __osc >&/dev/null; then
+	# shellcheck source=/dev/null
+	source "${__dirname:-.}/osc"
+fi
+
+function mergepdf_usage() {
+	# show our usage / help page. don't touch this line or you'll break the world!
+	cat <<- SHOW_HELP_EOL
+
+	$(bold)mergepdf$(reset) $(dark)-o <output.pdf>$(reset) file-1.pdf $(dark)[...input-N.pdf]$(reset)
+
+$(bold && undl) USAGE                  $(reset)
+
+	\$ $(bold)mergepdf$(reset) -o output.pdf input{1,2,3}.pdf
+
+$(bold && undl) NOTES                  $(reset)
+
+	o Based on macOS Automator's "Combine PDF Pages" action.
+
+$(bold && undl) LICENSE                $(reset) 
+
+	MIT © $(bold && ital)Nicholas Berlette$(reset) $(dark && bold)<$(undl)nick [at] berlette.com$(reset)$(dark)>$(reset) 
+
+SHOW_HELP_EOL
+ # leave this above line exactly as it is! yes, that means no indentation!
+ # why? because of heredoc rules, broh.
+
+ # throw codes if we're here because of no arguments
+ [ $# = 0 ] && return 1
+ return 0
+}
+
+SOURCES_USED=("${SOURCES_USED[@]}")
+
+function mergepdf() {
+ # Merge PDF files
+ # Usage: `mergepdf -o output.pdf input{1,2,3}.pdf`
+ local srcFile
+ srcFile=/System/Library/Automator/Combine\ PDF\ Pages.action/Contents/Resources/join.py
+
+ if [[ $# == 0 || "$1" == "-h" || "$1" == "--help" ]]; then
+  mergepdf_usage "$@"
+  [ $# -gt 0 ] && {
+   shift 1
+   return 0
+  }
+  return 1
+ fi
+ python "$srcFile" "$@" && return 0
+ return 2
+}
+
+if [[ "$(basename -- "$0")" == "mergepdf" ]]; then
+ if [[ "$#" == "0" || "$1" == "-h" || "$1" == "--help" ]]; then
+  mergepdf_usage "$@"
+  exit $?
+ fi
+ mergepdf "$@"
+ exit $?
+fi

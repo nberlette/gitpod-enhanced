@@ -1,0 +1,108 @@
+#!/usr/bin/env bash
+
+# convert hexadecimal colors to bash rgb format!
+function hex2rgb() {
+	local raw copy hex r g b alpha modifier delim pipe
+  delim=";" pipe=cat
+  function hex2rgb_usage() {
+    cat<<HEX2RGB_EOL
+
+$(cyn)h$(grn)e$(ylw)x$(orn)2$(red)r$(mag)g$(blu)b$(reset) · $(ital)Convert hexadecimal colors to bash-friendly RGB$(reset)
+
+$(bold && undl)USAGE$(reset)
+
+  \$ $(bold && hex2rgb 8dddff)hex2rgb$(reset && dark) [-t|-c|-r] [-d delimiter] [-b|-f] <$(reset && ital)hex-color ...$(reset && dark)>$(reset)
+
+$(bold && undl)OPTIONS$(reset)
+
+  $(ital && bold && ylw)-b, --background$(reset)         format output as a $(bold && undl)background$(reset) color
+  $(ital && bold && ylw)-f, --foreground$(reset)         format output as a $(bold && undl)foreground$(reset) color
+  $(ital && bold && ylw)-t, --tee$(reset)                pipe output to stdout and to the clipboard
+  $(ital && bold && ylw)-c, --copy$(reset)               pipe output to the clipboard
+  $(ital && bold && ylw)-r, --raw$(reset)                outputs raw rgb values, no escape sequences
+  $(ital && bold && ylw)-d, --delim$(reset)              specify a delimiter for output (default is ';')
+
+$(bold && undl)EXAMPLES$(reset)
+
+  \$ hex2rgb 8cc055
+    $(2rgb 8cc055)
+
+  \$ hex2rgb -d ', ' -r -- ff3a00
+     $(hex2rgb ff3a00)$(hex2rgb -d ', ' -r -- ff3a00)$(reset)
+
+HEX2RGB_EOL
+  }
+  while [[ "$1" == -* ]]; do
+    case $1 in
+      (-[bB]|--background)
+        modifier=48;;
+      (-[fF]|--foreground)
+        modifier=38;;
+      (-[tT]|--tee)
+        pipe=tee;;
+      (-[cC]|--copy)
+        pipe=pbcopy;;
+      (-[rR]|--raw)
+        pipe=cat; raw=1;;
+      (-[dD]|--delim)
+        [ -n "$2" ] && { delim=$2; shift; };;
+      (-[eE]|--esc)
+        [ -n "$2" ] && { esc=$2; shift; };;
+      (-[hH]|"-?"|"?"|--help)
+        hex2rgb_usage
+        return;;
+      (--)
+        shift; break;;
+      (-*)
+        echo "Unknown option: $1" >&2;
+        hex2rgb_usage
+        return 1;;
+      (*)
+        break;;
+    esac
+    shift;
+  done
+  if (($# > 0)); then
+    for hex in "$@"; do
+	  	hex="${hex//'#'/}"
+      if [ "${#hex}" = "3" ]; then
+        # expand shorthand
+        hex="${hex:0:1}${hex:0:1}${hex:1:1}${hex:1:1}${hex:2:1}${hex:2:1}"
+      elif [ "${#hex}" = "4" ]; then
+        # extract alpha channel (4th digit) from hex, convert it to decimal range 0-1.0
+        alpha="$(echo "ibase=16; ${hex:3:1}" | bc -l)"
+        # expand shorthand
+        hex="${hex:0:1}${hex:0:1}${hex:1:1}${hex:1:1}${hex:2:1}${hex:2:1}"
+      elif [ "${#hex}" = "6" ]; then
+        # expand shorthand
+        hex="${hex:0:2}${hex:2:2}${hex:4:2}"
+      elif [ "${#hex}" = "8" ]; then
+        # extract alpha channel (7-8th digits) from hex, convert to decimal range 0-1.0
+        alpha="$(echo "ibase=16; ${hex:6:2}" | bc -l)"
+        # expand shorthand
+        hex="${hex:0:2}${hex:2:2}${hex:4:2}"
+      fi
+
+      printf -v r "%d" 0x"${hex:0:2}"
+      printf -v g "%d" 0x"${hex:2:2}"
+      printf -v b "%d" 0x"${hex:4:2}"
+      if [ -z "$raw" ]; then
+        __osc "${modifier:-38}" "2" "$r" "$g" "$b" | $pipe
+      else
+        printf "%s%d%s%d%s%d" "${modifier:+"${modifier}${delim}2${delim}"}" "$r" "$delim" "$g" "$delim" "$b" | $pipe
+      fi
+    done
+  else
+    hex2rgb_usage
+    return 1
+  fi
+}
+
+# helper function to render the color with escape sequence as a sort of preview
+function 2rgb() {
+  printf $(hex2rgb "$@")' \\033['$(hex2rgb -d ';' -r "$@")'m \033[0m'
+}
+
+if [[ "${BASH_SOURCE[0]}" == "$0" ]]; then
+  hex2rgb "$@"
+fi

@@ -1,0 +1,6 @@
+[pull]
+	default = current
+	rebase  = false
+
+
+# vim: set filetype=gitconfig ts=2 sw=2 tw=0 noet :

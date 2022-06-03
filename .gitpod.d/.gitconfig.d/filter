@@ -1,0 +1,25 @@
+[filter "2-spaces-1-tab"]
+	clean  = "unexpand --tabs=2 --first-only"
+	smudge = "expand   --tabs=2 --initial"
+
+[filter "4-spaces-1-tab"]
+	clean  = "unexpand --tabs=4 --first-only"
+	smudge = "expand   --tabs=4 --initial"
+
+
+[filter "1-tab-2-spaces"]
+	clean  = "expand   --tabs=2 --initial"
+	smudge = "unexpand --tabs=2 --first-only"
+
+[filter "1-tab-4-spaces"]
+	clean  = "expand   --tabs=4 --initial"
+	smudge = "unexpand --tabs=4 --first-only"
+
+[filter "lfs"]
+	clean    = git-lfs clean -- %f
+	smudge   = git-lfs smudge -- %f
+	process  = git-lfs filter-process
+	required = true
+
+
+# vim: set filetype=gitconfig ts=2 sw=2 tw=0 noet :

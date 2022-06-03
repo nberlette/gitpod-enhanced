@@ -1,0 +1,34 @@
+shell=bash
+# Look for 'source'd files relative to the checked script,
+# and also look for absolute paths in /mnt/chroot
+source-path=SCRIPTDIR
+source-path=~/.dotfiles
+source-path=/mnt/chroot
+
+# Allow opening any 'source'd file, even if not specified as input
+external-sources=true
+
+# Turn on warnings for unquoted variables with safe values
+enable=quote-safe-variables
+
+# Turn on warnings for unassigned uppercase variables
+enable=check-unassigned-uppercase
+
+# Allow [ ! -z foo ] instead of suggesting -n
+disable=SC2236
+
+# allow export VAR=value instead of VAR=value; export VAR;
+disable=SC2155
+
+# allow env vars that are not assigned in the same script. (e.g. $TERM_PROGRAM)
+disable=SC2154
+
+# I forgot what these were, too lazy to look it up right now
+disable=SC2015
+disable=SC2139
+
+# "don't use variables in the printf format argument", she said.
+disable=SC2059
+
+# "useless cat". my mother didn't approve of that, so it had to go.
+disable=SC2002

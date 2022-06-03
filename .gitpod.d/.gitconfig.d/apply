@@ -1,0 +1,6 @@
+[apply]
+	# Detect whitespace errors when applying a patch
+	whitespace = fix
+
+
+# vim: set filetype=gitconfig ts=2 sw=2 tw=0 noet :

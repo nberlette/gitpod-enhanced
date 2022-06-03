@@ -1,16 +1,15 @@
-image: nberlette/gitpod-enhanced:latest
+## for development use the local Dockerfile image
+image:
+  file: Dockerfile
+
+## for production use the following image (from ghcr or dockerhub)
+# image: nberlette/gitpod-enhanced:latest
 
 ## tasks
 # before:  runs on every start; e.g. terminal configurations
 # init:    runs on prebuilds only; e.g. install dependencies
 # command: runs on every start; e.g. hot reload dev server
 # name:    task name to display in the terminal
-
-tasks:
-  - name: "Task Info"
-    before: printf "\e[1;34;4m%s\e[0m\n\e[2;3m%s\e[0m\n\n" "tasks.[].before" "- runs on every start, before init or command\n- for manipulating state not shared across tasks\n- must terminate without error to proceed (exit 0)\n- intended only for non-interactive processes\n- this is a good place to install local dependencies"
-    init: printf "\e[1;33;4m%s\e[0m\n\e[2;3m%s\e[0m\n\n" "tasks.[].init" "- runs only on prebuilds and coldstarts\n- must terminate successfully to proceed (exit 0)\n- intended only for non-interactive processes\n- this is a good place to config/install your tooling"
-    command: printf "\e[1;32;4m%s\e[0m\n\e[2;3m%s\e[0m\n\n" "tasks.[].command" "- runs on every start as the tasks main command\n- allowed to run a non-terminating (interactive) process\n- this is a good place to run your Dev Server"
 
 gitConfig:
   bash.showColorHints: "true"
@@ -48,7 +47,6 @@ vscode:
   extensions:
     - github.copilot-nightly
     - ms-azuretools.vscode-docker
-    - eamodio.gitlens
     - esbenp.prettier-vscode
     - dbaeumer.vscode-eslint
     - christian-kohler.npm-intellisense
@@ -73,8 +71,8 @@ github:
   prebuilds:
     master: true
     branches: true
-    addLabel: true
+    addLabel: 'gitpod'
     addCheck: true
     addBadge: true
     pullRequests: true
-    pullRequestsFromForks: false
+    pullRequestsFromForks: true

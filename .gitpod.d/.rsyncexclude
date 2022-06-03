@@ -1,0 +1,58 @@
+# build process
+bootstrap.sh
+install.sh
+.bin/banner.sh
+build.sh
+
+# logs from installation
+*.log
+.*.log
+
+# docs
+docs
+docs/*
+LICENSE*
+README*
+license*
+readme*
+*.md
+
+# lint
+.prettierrc
+.prettierignore
+.shellcheckrc
+
+# git
+.git/
+.github/
+.gitpod.yml
+.devcontainer
+gitignore
+gitconfig
+
+# ignore oneself
+.rsync*
+
+# temporary bugfix
+.bashrc.d/base.sh
+.bashrc.d/config.sh
+.bashrc.d/logging.sh
+
+# package.json etc
+package*.json
+pnpm-lock.yaml
+yarn.lock
+npm-shrinkwrap.json
+
+# misc
+bin
+.*keep
+**/.*keep
+.DS_Store
+
+# install artifacts
+_installs
+_installs/*
+.backup*
+.cache
+.cache/*

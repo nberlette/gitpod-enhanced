@@ -1,0 +1,8 @@
+[merge]
+	# Include summaries of merged commits in newly created merge commit messages
+	log = true
+
+	renormalize = true
+
+
+# vim: set filetype=gitconfig ts=2 sw=2 tw=0 noet :

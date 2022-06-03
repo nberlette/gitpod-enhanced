@@ -1,5 +1,6 @@
-[&laquo; `go back to the gitpod-enhanced home page`](./)
-
+---
+title: "Contributing to gitpod-enhanced"
+---
 
 ## Contributing to `gitpod-enhanced`
 
@@ -21,7 +22,4 @@ Please keep it cordial, and in compliance with the [code of conduct](./conduct).
 
 Thanks!
 
----
-
-[MIT](https://mit-license.org) © 2022 [Nicholas Berlette](https://github.com/nberlette) &middot; not affiliated with [gitpod.io](https://gitpod.io) &middot; [contribute](./contribute) &middot; [code of conduct](./conduct)
 

@@ -1,7 +1,6 @@
-[&laquo; `go back to the gitpod-enhanced home page`](./)
-
-
-# Contributor Covenant Code of Conduct
+---
+title: "Contributor Covenant (Code of Conduct)"
+---
 
 ## Our Pledge
 

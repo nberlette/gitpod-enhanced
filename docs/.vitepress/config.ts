@@ -6,7 +6,7 @@ export default defineConfig({
   title: 'gitpod-enhanced',
   base: '/',
   themeConfig: <DefaultTheme.Config>({
-    logo: 'https://icns.ml/gitpod.svg',
+    logo: '/gitpod.svg',
     repo: 'nberlette/gitpod-enhanced',
     nav: [
       {
@@ -54,9 +54,26 @@ export default defineConfig({
       'link',
       {
         rel: 'prefetch',
+        as: 'style',
+        type: 'text/css;charset=utf-8',
+        href: '/style.css',
+      },
+    ],
+    [
+      'link',
+      {
+        rel: 'stylesheet',
+        type: 'text/css;charset=utf-8',
+        href: '/style.css',
+      },
+    ],
+    [
+      'link',
+      {
+        rel: 'prefetch',
         as: 'icon',
         type: 'image/svg+xml;charset=utf-8',
-        href: 'https://icns.ml/gitpod.svg',
+        href: '/gitpod.svg',
       },
     ],
     [
@@ -64,7 +81,7 @@ export default defineConfig({
       {
         rel: 'icon',
         type: 'image/svg+xml;charset=utf-8',
-        href: 'https://icns.ml/gitpod.svg',
+        href: '/gitpod.svg',
       },
     ],
     [
@@ -72,7 +89,7 @@ export default defineConfig({
       {
         rel: 'mask-icon',
         type: 'image/svg+xml;charset=utf-8',
-        href: 'https://icns.ml/gitpod.svg',
+        href: '/gitpod.svg',
         color: '#112233',
       },
     ],

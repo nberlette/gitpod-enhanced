@@ -191,22 +191,3 @@ Thanks!
 ### License
 
 [MIT](https://mit-license.org) © 2022 [Nicholas Berlette](https://github.com/nberlette) &middot; not affiliated with [gitpod.io](https://gitpod.io) &middot; [contribute](./contribute) &middot; [code of conduct](./conduct)
-
-<style>
-.badges {
-  margin: 1rem auto;
-  display: flex;
-  flex: row auto;
-  flex-shrink: 0;
-  flex-wrap: wrap;
-  gap: 0.5rem;
-  place-items: center;
-  align-items: center;
-  justify: space-around;
-  justify-content: center;
-  text-align: center;
-}
-.badges a[href], .badges a[href] img {
-  display: inline-block;
-}
-</style>

@@ -34,22 +34,22 @@ jobs:
     - 
       name: "Compile"
       run: pnpm --dir docs run build
-    -
-      name: "Configure GPG"
-      run: |
-        git config --global user.signingkey "0x57525A3677C060BC"
-        git config --global commit.gpgsign true
-        git config --global tag.gpgsign true
-    -
-      name: "Import GPG"
-      uses: crazy-max/ghaction-import-gpg@v3
-      with:
-        gpg-private-key: ${{ secrets.GPG_PRIVATE_KEY }}
-        passphrase: ${{ secrets.GPG_PASSPHRASE }}
-        git-user-signingkey: true
-        git-config-global: true
-        git-commit-gpgsign: true
-        git-tag-gpgsign: true
+    # -
+    #   name: "Configure GPG"
+    #   run: |
+    #     git config --global user.signingkey "0x57525A3677C060BC"
+    #     git config --global commit.gpgsign true
+    #     git config --global tag.gpgsign true
+    # -
+    #   name: "Import GPG"
+    #   uses: crazy-max/ghaction-import-gpg@v3
+    #   with:
+    #     gpg-private-key: ${{ secrets.GPG_PRIVATE_KEY }}
+    #     passphrase: ${{ secrets.GPG_PASSPHRASE }}
+    #     git-user-signingkey: true
+    #     git-config-global: true
+    #     git-commit-gpgsign: true
+    #     git-tag-gpgsign: true
     - 
       if: success()
       name: "Commit + Deploy"

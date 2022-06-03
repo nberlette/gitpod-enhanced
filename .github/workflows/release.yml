@@ -9,6 +9,8 @@ on:
       - 'next'
       - 'releases/**'
       - 'release/**'
+    paths-ignore:
+      - 'docs/**'
     tags:
       - 'v*.*.*'
   pull_request:

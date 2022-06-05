@@ -1,9 +1,9 @@
 ## for development use the local Dockerfile image
-image:
-  file: Dockerfile
+# image:
+#   file: Dockerfile
 
 ## for production use the following image (from ghcr or dockerhub)
-# image: nberlette/gitpod-enhanced:latest
+image: nberlette/gitpod-enhanced:nightly
 
 ## tasks
 # before:  runs on every start; e.g. terminal configurations

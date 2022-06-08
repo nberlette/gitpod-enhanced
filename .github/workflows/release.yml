@@ -2,14 +2,14 @@ name: "Build, Tag, Publish"
 on:
   workflow_dispatch:
   schedule:
-    - cron: '17 10 */3 * *'
+    - cron: '17 10 * * *'
   push:
     branches:
       - 'main'
       - 'releases/**'
       - 'release/**'
     tags:
-      - 'v*.*.*'
+      - 'v*'
     paths-ignore:
       - 'docs/**'
       - '.github/**'
@@ -44,6 +44,7 @@ jobs:
             type=semver,pattern={{major}}.{{minor}}
             type=semver,pattern={{major}}
             type=sha
+            latest
       -
         name: Set up QEMU
         uses: docker/setup-qemu-action@v1

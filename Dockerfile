@@ -32,7 +32,7 @@ RUN export PNPM_HOME="$HOME/.local/share/pnpm"; \
     pnpm env use --global lts 2>/dev/null;
 
 # update pnpm if needed, add global packages
-RUN pnpm add --global --auto-install-peers --shamefully-hoist \
+RUN pnpm add --global \
     pnpm \
     nuxi \
     turbo \
@@ -44,7 +44,7 @@ RUN pnpm add --global --auto-install-peers --shamefully-hoist \
     dotenv-vault ;
 
 # install some more of my development toolkit
-RUN pnpm add --global --auto-install-peers --shamefully-hoist \
+RUN pnpm add --global \
     zx \
     harx \
     esno \

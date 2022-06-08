@@ -23,12 +23,11 @@ RUN brew update && brew upgrade && brew cleanup
 USER gitpod
 
 # configure pnpm and nodejs
-ARG NODE_VERSION=16.15.0
-RUN export PNPM_HOME="$HOME/.local/share/pnpm"; \
+RUN export NODE_VERSION=16.15.1; \
+    export PNPM_HOME="$HOME/.local/share/pnpm"; \
     export PATH="$PNPM_HOME:$PATH"; \
     which pnpm &>/dev/null || \
           curl -fsSL https://get.pnpm.io/install.sh | sh - ; \
-    export NODE_VERSION="16.15.0"; \
     pnpm env use --global "${NODE_VERSION:-lts}"; \
     pnpm setup && pnpm i -g pnpm @brlt/n ;
 

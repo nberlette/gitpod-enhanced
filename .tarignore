@@ -1,7 +1,6 @@
 docs
 docs/*
 *.md
-LICENSE*
 README*
 package.json
 pnpm-*.yaml
@@ -15,3 +14,4 @@ install.sh
 .fonts
 .gitpod.yml
 .Brewfile
+.rsync*

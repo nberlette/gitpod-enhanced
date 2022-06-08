@@ -16,7 +16,7 @@
 		"vscode": {
 			// *default* container specific settings.json values on container create.
 			"settings": {
-				"terminal.integrated.defaultProfile.linux": "bash",
+				"terminal.integrated.defaultProfile.linux": "bash (2)",
         "git.enableCommitSigning": true
 			},
       // vscode extensions to pre-install at build time

@@ -29,12 +29,11 @@ RUN export PNPM_HOME="$HOME/.local/share/pnpm"; export PATH="$PNPM_HOME:$PATH"; 
     
 # setup node.js v16.15.1 since 17.x has some nasty breaking changes
 RUN NODE_VERSION=16.15.1 pnpm env use --global "${NODE_VERSION:-lts}";
-    
-# update pnpm to latest and add some global packages I use a lot
-RUN pnpm add -g pnpm@latest ;
-    pnpm add -g vercel wrangler miniflare netlify-cli @railway/cli \
-                @brlt/eslint-config @brlt/n @brlt/prettier @brlt/utils \
-                typescript ts-node @types/node eslint prettier degit harx ;
+# update pnpm if needed, add hosting provider packages
+RUN pnpm add -g pnpm@latest vercel wrangler miniflare netlify-cli @railway/cli;
+# add development toolkit packages I use a lot
+RUN pnpm add -g typescript ts-node @types/node eslint prettier degit harx sirv-cli bumpp\
+                @brlt/eslint-config @brlt/n @brlt/prettier @brlt/utils ;
 
 # configure homebrew prefix (if it does not already exist) + add to PATH
 RUN export HOMEBREW_PREFIX="${HOMEBREW_PREFIX:-/home/linuxbrew/.linuxbrew}"; \

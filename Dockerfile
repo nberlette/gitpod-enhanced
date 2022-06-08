@@ -13,22 +13,24 @@ LABEL org.opencontainers.image.license="MIT"
 LABEL repository="https://github.com/nberlette/gitpod-enhanced"
 LABEL maintainer="nberlette"
 
-# update and upgrade stuff
+WORKDIR /home/gitpod
+
+# update system packages and cleanup cache
 ARG DEBIAN_FRONTEND=noninteractive
-RUN brew update && brew upgrade && brew cleanup
 RUN sudo apt-get -y update && sudo apt-get -y upgrade && sudo rm -rf /var/lib/apt/lists/*
 
 USER gitpod
-WORKDIR /home/gitpod
+
+# update/upgrade/cleanup homebrew packages
+RUN brew update && brew upgrade && brew cleanup
 
 # install + configure pnpm to run from a new location
 RUN export PNPM_HOME="$HOME/.local/share/pnpm"; \
     export PATH="$PNPM_HOME:$PATH"; \
     curl -fsSL https://get.pnpm.io/install.sh | bash -;
 
-# setup node.js v16.15.1 since 17.x has some nasty breaking changes
-RUN export NODE_VERSION="16.15.1"; \
-    pnpm env use --global "${NODE_VERSION:-lts}";
+# setup Node.js LTS (long-term support)
+RUN pnpm env use --global lts
 
 # update pnpm if needed, add global packages
 RUN pnpm add --global --auto-install-peers --shamefully-hoist \

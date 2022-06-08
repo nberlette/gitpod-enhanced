@@ -29,7 +29,8 @@ RUN brew update && brew upgrade && brew cleanup
 RUN export PNPM_HOME="$HOME/.local/share/pnpm"; \
     export PATH="$PNPM_HOME:$PATH"; \
     curl -fsSL https://get.pnpm.io/install.sh | bash - ; \
-    pnpm env use --global lts 2>/dev/null;
+    pnpm env use --global lts 2>/dev/null; \
+    pnpm setup;
 
 # update pnpm if needed, add global packages
 RUN pnpm add --global \

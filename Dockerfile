@@ -26,44 +26,41 @@ RUN brew update && brew upgrade && brew cleanup
 
 # install + configure pnpm to run from a new location
 # then setup Node.js LTS (long-term support)
-RUN export PNPM_HOME="$HOME/.local/share/pnpm"; \
-    export PATH="$PNPM_HOME:$PATH"; \
-    curl -fsSL https://get.pnpm.io/install.sh | bash - ; \
+RUN curl -fsSL https://get.pnpm.io/install.sh | bash - ; \
     pnpm env use --global lts 2>/dev/null; \
-    pnpm setup;
-
-# update pnpm if needed, add global packages
-RUN pnpm add --global \
-    pnpm \
-    nuxi \
-    turbo \
-    vercel \
-    wrangler \
-    miniflare \
-    netlify-cli \
-    @railway/cli \
-    dotenv-vault ;
-
-# install some more of my development toolkit
-RUN pnpm add --global \
-    zx \
-    harx \
-    esno \
-    vite \
-    degit \
-    bumpp \
-    serve \
-    unbuild \
-    vitest \
-    eslint \
-    vue-cli \
-    @brlt/n \
-    prettier \
-    typescript \
-    @brlt/utils \
-    @brlt/prettier \
-    @changesets/cli \
-    @brlt/eslint-config ;
+    export PNPM_HOME="$HOME/.local/share/pnpm"; \
+    export PATH="$PNPM_HOME:$PATH"; pnpm setup; \
+    # update pnpm (if needed) and add CLI packages
+    pnpm add --global \
+        pnpm \
+        nuxi \
+        turbo \
+        vercel \
+        wrangler \
+        miniflare \
+        netlify-cli \
+        @railway/cli \
+        dotenv-vault ; \
+    # install some of my preferred development toolkit
+    pnpm add --global \
+        zx \
+        harx \
+        esno \
+        vite \
+        degit \
+        bumpp \
+        serve \
+        unbuild \
+        vitest \
+        eslint \
+        vue-cli \
+        @brlt/n \
+        prettier \
+        typescript \
+        @brlt/utils \
+        @brlt/prettier \
+        @changesets/cli \
+        @brlt/eslint-config ;
 
 # configure homebrew prefix and add to path - we will dedupe it later; its a total mess.
 RUN export HOMEBREW_PREFIX="${HOMEBREW_PREFIX:-/home/linuxbrew/.linuxbrew}"; \

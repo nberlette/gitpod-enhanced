@@ -25,12 +25,11 @@ USER gitpod
 RUN brew update && brew upgrade && brew cleanup
 
 # install + configure pnpm to run from a new location
+# then setup Node.js LTS (long-term support)
 RUN export PNPM_HOME="$HOME/.local/share/pnpm"; \
     export PATH="$PNPM_HOME:$PATH"; \
-    curl -fsSL https://get.pnpm.io/install.sh | bash -;
-
-# setup Node.js LTS (long-term support)
-RUN pnpm env use --global lts
+    curl -fsSL https://get.pnpm.io/install.sh | bash - ; \
+    pnpm env use --global lts 2>/dev/null;
 
 # update pnpm if needed, add global packages
 RUN pnpm add --global --auto-install-peers --shamefully-hoist \

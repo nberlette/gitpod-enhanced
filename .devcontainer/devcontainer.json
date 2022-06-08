@@ -16,7 +16,7 @@
 		"vscode": {
 			// *default* container specific settings.json values on container create.
 			"settings": {
-				"terminal.integrated.defaultProfile.linux": "bash",
+				"terminal.integrated.defaultProfile.linux": "bash (2)",
         "git.enableCommitSigning": true
 			},
       // vscode extensions to pre-install at build time
@@ -48,18 +48,14 @@
 	// Use 'postCreateCommand' to run commands after the container is created.
 	"postCreateCommand": "uname -a",
 
-
-
 	// Uncomment to connect as a non-root user. See https://aka.ms/vscode-remote/containers/non-root.
 	// "remoteUser": "vscode",
 	"features": {
-		"terraform": "latest",
 		"git": "os-provided",
 		"github-cli": "latest",
 		"sshd": "latest",
 		"homebrew": "latest",
 		"python": "os-provided",
-		"golang": "latest",
 		"ruby": "3.1",
 		"rust": "latest"
 	}

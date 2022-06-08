@@ -1,9 +1,0 @@
-#!/bin/bash
-
-USERNAME=${USER:-felix}
-
-# Setup ACL for files
-sudo setfacl -R -m "u:${USERNAME}:rwx" $1
-
-# Setup ACL for directories
-sudo setfacl -R -m "d:u:${USERNAME}:rwx" $1

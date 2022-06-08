@@ -1,0 +1,17 @@
+docs
+docs/*
+*.md
+README*
+package.json
+pnpm-*.yaml
+package-lock.json
+yarn.lock
+.*.log
+.git
+.github
+.devcontainer
+install.sh
+.fonts
+.gitpod.yml
+.Brewfile
+.rsync*

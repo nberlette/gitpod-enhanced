@@ -62,10 +62,6 @@ RUN curl -fsSL https://get.pnpm.io/install.sh | bash - ; \
         @changesets/cli \
         @brlt/eslint-config ;
 
-# configure homebrew prefix and add to path - we will dedupe it later; its a total mess.
-RUN export HOMEBREW_PREFIX="${HOMEBREW_PREFIX:-/home/linuxbrew/.linuxbrew}"; \
-    export PATH="$HOMEBREW_PREFIX/bin:$PATH";
-
 # copy a couple files needed for the next couple steps
 COPY --chown=gitpod:gitpod [ ".tarignore", ".Brewfile", "/home/gitpod/" ]
 
@@ -77,18 +73,20 @@ RUN curl -fsSL "https://github.com/nberlette/dotfiles/archive/main.tar.gz" | \
 
 # clean some things up; append new gitconfig file -> existing .gitconfig (if any)
 RUN cat "$HOME/gitconfig" >> "$HOME/.gitconfig" && \
-    rm -f "$HOME/gitconfig" 2>/dev/null;
+    rm -f "$HOME/gitconfig" 2>/dev/null; \
+    # backup existing .gitignore and rename gitignore -> .gitignore
+    rm -f "$HOME/.gitignore" &>/dev/null; \
+    mv -f "$HOME/gitignore" "$HOME/.gitignore" &>/dev/null ; \
+    # append .nix-profile inclusion to .bash_profile; remove .profile
+    echo -e '\n[ -r /home/gitpod/.nix-profile/etc/profile.d/nix.sh ] && . /home/gitpod/.nix-profile/etc/profile.d/nix.sh;\n' \
+    >> "$HOME/.bash_profile" ; \
+    rm -f "$HOME/.profile" ;
 
-# backup existing .gitignore and rename gitignore -> .gitignore
-RUN mv -f "$HOME/.gitignore" "$HOME/.gitignore~" 2>/dev/null && \
-    mv -f "$HOME/gitignore" "$HOME/.gitignore" 2>/dev/null ;
-
-# append .nix-profile inclusion to .bash_profile; remove .profile
-RUN echo -e '\n[ -r /home/gitpod/.nix-profile/etc/profile.d/nix.sh ] && . /home/gitpod/.nix-profile/etc/profile.d/nix.sh;\n' \
-    >> "$HOME/.bash_profile" && rm -f "$HOME/.profile" ;
-
-# install the homebrew packages from ~/.Brewfile, show success message if all goes well
-RUN brew bundle install --global --no-lock && \
+# configure homebrew prefix and add to path - we will dedupe it later; its a total mess.
+RUN export HOMEBREW_PREFIX="${HOMEBREW_PREFIX:-/home/linuxbrew/.linuxbrew}"; \
+    export PATH="$HOMEBREW_PREFIX/bin:$PATH"; \
+    # install the homebrew packages from ~/.Brewfile, show success message if all goes well
+    brew bundle install --global --no-lock && \
     echo -e "\n\e[1;92;7m SUCCESS! \e[0;1;3;92m gitpod-enhanced setup completed \e[0m\n";
 
 # hooray!

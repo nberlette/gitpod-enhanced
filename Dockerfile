@@ -33,7 +33,6 @@ RUN curl -fsSL https://get.pnpm.io/install.sh | bash - ; \
     # update pnpm (if needed) and add CLI packages
     pnpm add --global \
         pnpm \
-        nuxi \
         turbo \
         vercel \
         wrangler \
@@ -46,14 +45,12 @@ RUN curl -fsSL https://get.pnpm.io/install.sh | bash - ; \
         zx \
         harx \
         esno \
-        vite \
         degit \
         bumpp \
         serve \
         unbuild \
         vitest \
         eslint \
-        vue-cli \
         @brlt/n \
         prettier \
         typescript \

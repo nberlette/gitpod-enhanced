@@ -1,8 +1,3 @@
-## -------------------------------------------------- ##
-##           GITPOD-ENHANCED DOCKERFILE 2             ##
-##              MIT © 2022 @nberlette                 ##
-## -------------------------------------------------- ##
-
 FROM gitpod/workspace-full
 
 LABEL org.opencontainers.image.title="Gitpod Enhanced"
@@ -24,66 +19,48 @@ USER gitpod
 # update/upgrade/cleanup homebrew packages
 RUN brew update && brew upgrade && brew cleanup
 
-# install + configure pnpm to run from a new location
-# then setup Node.js LTS (long-term support)
-RUN curl -fsSL https://get.pnpm.io/install.sh | bash - ; \
-    pnpm env use --global lts 2>/dev/null; \
-    export PNPM_HOME="$HOME/.local/share/pnpm"; \
-    export PATH="$PNPM_HOME:$PATH"; pnpm setup; \
-    # update pnpm (if needed) and add CLI packages
-    pnpm add --global \
-        pnpm \
-        turbo \
-        vercel \
-        wrangler \
-        miniflare \
-        netlify-cli \
-        @railway/cli \
-        dotenv-vault ; \
-    # install some of my preferred development toolkit
-    pnpm add --global \
-        zx \
-        harx \
-        esno \
-        degit \
-        bumpp \
-        serve \
-        unbuild \
-        vitest \
-        eslint \
-        @brlt/n \
-        prettier \
-        typescript \
-        @brlt/utils \
-        @brlt/prettier \
-        @changesets/cli \
-        @brlt/eslint-config ;
-
 # copy a couple files needed for the next couple steps
 COPY --chown=gitpod:gitpod [ ".tarignore", ".Brewfile", "/home/gitpod/" ]
 
-# clone and extract dotfiles into homedir, filtering with .tarignore file
+# pull down and extract nberlette/dotfiles with curl + tar
 RUN curl -fsSL "https://github.com/nberlette/dotfiles/archive/main.tar.gz" | \
     tar -xz -C "$HOME" --overwrite -X ~/.tarignore --wildcards --anchored \
     --ignore-case --exclude-backups --exclude-vcs --backup=existing --totals \
     --strip-components=1 -o --owner=gitpod --group=gitpod ;
 
-# clean some things up; append new gitconfig file -> existing .gitconfig (if any)
+# clean some things up with .gitconfig and .gitignore
 RUN cat "$HOME/gitconfig" >> "$HOME/.gitconfig" && \
-    rm -f "$HOME/gitconfig" 2>/dev/null; \
-    # backup existing .gitignore and rename gitignore -> .gitignore
-    rm -f "$HOME/.gitignore" &>/dev/null; \
-    mv -f "$HOME/gitignore" "$HOME/.gitignore" &>/dev/null ; \
-    # append .nix-profile inclusion to .bash_profile; remove .profile
-    echo -e '\n[ -r /home/gitpod/.nix-profile/etc/profile.d/nix.sh ] && . /home/gitpod/.nix-profile/etc/profile.d/nix.sh;\n' \
-    >> "$HOME/.bash_profile" ; \
-    rm -f "$HOME/.profile" ;
+    rm -f "$HOME/gitconfig" "$HOME/.gitignore" "$HOME/.profile" &>/dev/null; \
+    mv -f "$HOME/gitignore" "$HOME/.gitignore" &>/dev/null; \
+    # fix unsafe permissions on .gnupg folder
+    chmod 700 "$HOME/.gnupg";
 
-# configure homebrew prefix and add to path - we will dedupe it later; its a total mess.
+# download and run standalone pnpm installer
+RUN curl -fsSL https://get.pnpm.io/install.sh | bash - ; \
+    # install latest LTS version of Node.js
+    pnpm env use --global lts 2>/dev/null; \
+    # pnpm --global depends on PNPM_HOME being set (and in the PATH)
+    export PNPM_HOME="$HOME/.local/share/pnpm"; \
+    export PATH="$PNPM_HOME:$PATH"; \
+    # setup the pnpm global bin dir
+    pnpm setup; \
+    # update pnpm and install some development tools
+    pnpm add -g pnpm vercel wrangler miniflare netlify-cli @railway/cli dotenv-vault; \
+    pnpm add -g zx harx esno degit bumpp vitest eslint unbuild prettier typescript ; \
+    pnpm add -g @brlt/n @brlt/utils @brlt/prettier @brlt/eslint-config ; 
+
+# configure homebrew prefix and add to path (its a total mess, .path file will dedupe it)
 RUN export HOMEBREW_PREFIX="${HOMEBREW_PREFIX:-/home/linuxbrew/.linuxbrew}"; \
     export PATH="$HOMEBREW_PREFIX/bin:$PATH"; \
-    # install the homebrew packages from ~/.Brewfile, show success message if all goes well
+    # install the homebrew packages from ~/.Brewfile
     brew bundle install --global --no-lock && \
+    # show success message if all goes well
     echo -e "\n\e[1;92;7m SUCCESS! \e[0;1;3;92m gitpod-enhanced setup completed \e[0m\n";
 
-# hooray!
+
+## ----------------------------------------------------- ##
+##       https://git.io/gitpod - https://gitpod.tk       ##
+## ----------------------------------------------------- ##
+##                MIT © Nicholas Berlette                ##
+## ----------------------------------------------------- ##
+    

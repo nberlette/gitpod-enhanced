@@ -13,8 +13,9 @@ html, body {
     justify-content: center;
     text-align: center;
 }
-
 .badges a[href], .badges a[href] img {
     display: inline-block;
 }
-
+.VPNav.no-sidebar {
+    background-color: var(--vp-c-text-inverse-1);
+}

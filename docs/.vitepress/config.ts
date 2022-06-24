@@ -3,27 +3,27 @@ import { defineConfig, type DefaultTheme, type HeadConfig } from 'vitepress'
 
 export default defineConfig({
   lang: 'en-US',
-  title: 'gitpod-enhanced',
+  title: 'Gitpod Enhanced',
   base: '/',
-  themeConfig: <DefaultTheme.Config>({
+  themeConfig: <DefaultTheme.Config>{
     logo: '/gitpod.svg',
     repo: 'nberlette/gitpod-enhanced',
     nav: [
       {
-        text: 'Contribute',
-        link: '/contribute',
+        text: 'Home',
+        link: '/',
       },
       {
-        text: 'Custom Docker Images',
+        text: 'Gitpod + Docker',
         link: '/gitpod-docker',
-      },
-      {
-        text: 'Open in Gitpod',
-        link: 'https://gitpod.io/#https://github.com/nberlette/gitpod-enhanced',
       },
       {
         text: 'View on GitHub',
         link: 'https://github.com/nberlette/gitpod-enhanced',
+      },
+      {
+        text: 'Edit in Gitpod',
+        link: 'https://gitpod.io/#https://github.com/nberlette/gitpod-enhanced',
       },
     ],
     docsDir: 'docs',
@@ -33,8 +33,8 @@ export default defineConfig({
     lastUpdated: true,
     prevLinks: true,
     nextLinks: true,
-  }),
-  head: <HeadConfig[]>([
+  },
+  head: <HeadConfig[]>[
     [
       'link',
       {
@@ -94,7 +94,7 @@ export default defineConfig({
         rel: 'mask-icon',
         type: 'image/svg+xml;charset=utf-8',
         href: '/gitpod.svg',
-        color: '#112233',
+        color: '#ffae33',
       },
     ],
     [
@@ -105,5 +105,5 @@ export default defineConfig({
         value: '#112233',
       },
     ],
-  ]),
+  ],
 })

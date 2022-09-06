@@ -50,13 +50,15 @@ RUN curl -fsSL https://get.pnpm.io/install.sh | bash - ; \
     
     
 ENV DENO_INSTALL="$HOME/.deno"
+
 RUN mkdir -p "$HOME/.deno" \
     && curl -fsSL https://deno.land/install.sh | sh \
-    && chown -R gitpod "$HOME/.deno"
+    && chown -R gitpod "$HOME/.deno";
+    
 ENV PATH="${DENO_INSTALL}/bin:${PATH}" \
     DENO_DIR="${DENO_INSTALL}/.cache/deno" \
     HOMEBREW_PREFIX="${HOMEBREW_PREFIX:-/home/linuxbrew/.linuxbrew}" \
-    PATH="$HOMEBREW_PREFIX/bin:$PATH" \
+    PATH="$HOMEBREW_PREFIX/bin:$PATH"
 
 # install the homebrew packages from ~/.Brewfile
 RUN brew bundle install --global --no-lock && \
@@ -69,4 +71,3 @@ RUN brew bundle install --global --no-lock && \
 ## ----------------------------------------------------- ##
 ##                MIT © Nicholas Berlette                ##
 ## ----------------------------------------------------- ##
-    

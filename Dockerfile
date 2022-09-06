@@ -35,25 +35,31 @@ RUN cat "$HOME/gitconfig" >> "$HOME/.gitconfig" && \
     # fix unsafe permissions on .gnupg folder
     chmod 700 "$HOME/.gnupg";
 
+ENV PNPM_HOME="$HOME/.local/share/pnpm" \
+    PATH="${PNPM_HOME}:${PATH}"
+    
 # download and run standalone pnpm installer
 RUN curl -fsSL https://get.pnpm.io/install.sh | bash - ; \
-    # install latest LTS version of Node.js
     pnpm env use --global lts 2>/dev/null; \
-    # pnpm --global depends on PNPM_HOME being set (and in the PATH)
-    export PNPM_HOME="$HOME/.local/share/pnpm"; \
-    export PATH="$PNPM_HOME:$PATH"; \
     # setup the pnpm global bin dir
     pnpm setup; \
     # update pnpm and install some development tools
     pnpm add -g pnpm vercel wrangler miniflare netlify-cli @railway/cli dotenv-vault; \
     pnpm add -g zx harx esno degit bumpp vitest eslint unbuild prettier typescript ; \
     pnpm add -g @brlt/n @brlt/utils @brlt/prettier @brlt/eslint-config ; 
+    
+    
+ENV DENO_INSTALL="$HOME/.deno"
+RUN mkdir -p "$HOME/.deno" \
+    && curl -fsSL https://deno.land/install.sh | sh \
+    && chown -R gitpod "$HOME/.deno"
+ENV PATH="${DENO_INSTALL}/bin:${PATH}" \
+    DENO_DIR="${DENO_INSTALL}/.cache/deno" \
+    HOMEBREW_PREFIX="${HOMEBREW_PREFIX:-/home/linuxbrew/.linuxbrew}" \
+    PATH="$HOMEBREW_PREFIX/bin:$PATH" \
 
-# configure homebrew prefix and add to path (its a total mess, .path file will dedupe it)
-RUN export HOMEBREW_PREFIX="${HOMEBREW_PREFIX:-/home/linuxbrew/.linuxbrew}"; \
-    export PATH="$HOMEBREW_PREFIX/bin:$PATH"; \
-    # install the homebrew packages from ~/.Brewfile
-    brew bundle install --global --no-lock && \
+# install the homebrew packages from ~/.Brewfile
+RUN brew bundle install --global --no-lock && \
     # show success message if all goes well
     echo -e "\n\e[1;92;7m SUCCESS! \e[0;1;3;92m gitpod-enhanced setup completed \e[0m\n";
 

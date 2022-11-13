@@ -14,5 +14,4 @@ brew "shellcheck"
 brew "shfmt"
 brew "starship"
 brew "supabase/tap/supabase"
-# prefer installing deno via dockerfile
 brew "xclip"

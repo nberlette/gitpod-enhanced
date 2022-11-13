@@ -15,3 +15,6 @@ install.sh
 .gitpod.yml
 .Brewfile
 .rsync*
+.npmrc
+.osx
+LICENSE

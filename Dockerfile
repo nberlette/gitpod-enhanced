@@ -17,7 +17,7 @@ RUN sudo apt-get -y update && sudo apt-get -y upgrade && sudo rm -rf /var/lib/ap
 USER gitpod
 
 # update/upgrade/cleanup homebrew packages
-RUN brew update && brew upgrade && brew cleanup
+RUN brew cleanup; brew update; brew upgrade;
 
 # copy a couple files needed for the next couple steps
 COPY --chown=gitpod:gitpod [ ".tarignore", ".Brewfile", "/home/gitpod/" ]
@@ -29,42 +29,35 @@ RUN curl -fsSL "https://github.com/nberlette/dotfiles/archive/main.tar.gz" | \
     --strip-components=1 -o --owner=gitpod --group=gitpod ;
 
 # clean some things up with .gitconfig and .gitignore
-RUN cat "$HOME/gitconfig" >> "$HOME/.gitconfig" && \
-    rm -f "$HOME/gitconfig" "$HOME/.gitignore" "$HOME/.profile" &>/dev/null; \
-    mv -f "$HOME/gitignore" "$HOME/.gitignore" &>/dev/null; \
+RUN rm -f "$HOME/.profile" &>/dev/null; \
     # fix unsafe permissions on .gnupg folder
     chmod 700 "$HOME/.gnupg";
-
-ENV PNPM_HOME="$HOME/.local/share/pnpm" \
-    PATH="${PNPM_HOME}:${PATH}"
     
 # download and run standalone pnpm installer
-RUN curl -fsSL https://get.pnpm.io/install.sh | bash - ; \
-    pnpm env use --global lts 2>/dev/null; \
-    # setup the pnpm global bin dir
-    pnpm setup; \
-    # update pnpm and install some development tools
-    pnpm add -g pnpm vercel wrangler miniflare netlify-cli @railway/cli dotenv-vault; \
-    pnpm add -g zx harx esno degit bumpp vitest eslint unbuild prettier typescript ; \
-    pnpm add -g @brlt/n @brlt/utils @brlt/prettier @brlt/eslint-config ; 
-    
-    
-ENV DENO_INSTALL="$HOME/.deno"
+RUN which pnpm &>/dev/null || { \
+        curl -fsSL https://get.pnpm.io/install.sh | bash -; \
+        pnpm env use --global lts 2>/dev/null; \
+    }; 
 
-RUN mkdir -p "$HOME/.deno" \
-    && curl -fsSL https://deno.land/install.sh | sh \
-    && chown -R gitpod "$HOME/.deno";
+# update pnpm and install some development tools
+RUN pnpm add -g pnpm vercel wrangler miniflare netlify-cli @railway/cli dotenv-vault; pnpm add -g zx harx esno degit bumpp vitest eslint unbuild prettier typescript ; pnpm add -g @brlt/n @brlt/prettier @brlt/eslint-config ; 
     
-ENV PATH="${DENO_INSTALL}/bin:${PATH}" \
-    DENO_DIR="${DENO_INSTALL}/.cache/deno" \
-    HOMEBREW_PREFIX="${HOMEBREW_PREFIX:-/home/linuxbrew/.linuxbrew}" \
-    PATH="$HOMEBREW_PREFIX/bin:$PATH"
+    
+RUN export HOMEBREW_PREFIX="${HOMEBREW_PREFIX:-/home/linuxbrew/.linuxbrew}"; \
+    export DENO_INSTALL="${HOME}/.deno"; \
+    export PATH="${DENO_INSTALL}/bin:${HOMEBREW_PREFIX}/bin:${PATH}"; \ 
+    mkdir -p "$DENO_INSTALL"; \
+    curl -fsSL https://deno.land/install.sh | sh - ; \
+    chown -R gitpod "$DENO_INSTALL"; \
+    echo '#!/usr/bin/env bash\\n\\nexport DENO_INSTALL="$HOME/.deno" PATH="$DENO_INSTALL/bin:$PATH";\\nwhich deno &>/dev/null || curl -fsSL https://deno.land/install.sh | sh -\\n' > "$HOME/.bashrc.d/123-deno" && \
+    chmod +x "$HOME/.bashrc.d/123-deno" ;
 
 # install the homebrew packages from ~/.Brewfile
-RUN brew bundle install --global --no-lock && \
-    # show success message if all goes well
+RUN brew bundle install --global --no-lock ; \
+    sudo ln -s $(which gpg) $(which gh) /usr/local/bin/ &>/dev/null; \
+    ln -f "$HOME/gitignore" "$HOME/.gitignore" &>/dev/null; \
+    ln -f "$HOME/gitconfig" "$HOME/.gitconfig" &>/dev/null; \
     echo -e "\n\e[1;92;7m SUCCESS! \e[0;1;3;92m gitpod-enhanced setup completed \e[0m\n";
-
 
 ## ----------------------------------------------------- ##
 ##       https://git.io/gitpod - https://gitpod.tk       ##

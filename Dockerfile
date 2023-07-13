@@ -1,7 +1,7 @@
 FROM gitpod/workspace-full
 
 LABEL org.opencontainers.image.title="Gitpod Enhanced"
-LABEL org.opencontainers.image.description="Turbocharged Gitpod Workspace image, forked from gitpod/workspace-full."
+LABEL org.opencontainers.image.description="Turbocharged Gitpod Workspace image based on gitpod/workspace-full."
 LABEL org.opencontainers.image.author="Nicholas Berlette <nick@berlette.com>"
 LABEL org.opencontainers.image.source="https://github.com/nberlette/gitpod-enhanced"
 LABEL org.opencontainers.image.license="MIT"
@@ -49,18 +49,18 @@ RUN export HOMEBREW_PREFIX="${HOMEBREW_PREFIX:-/home/linuxbrew/.linuxbrew}"; \
     mkdir -p "$DENO_INSTALL"; \
     curl -fsSL https://deno.land/install.sh | sh - ; \
     chown -R gitpod "$DENO_INSTALL"; \
-    echo '#!/usr/bin/env bash\\n\\nexport DENO_INSTALL="$HOME/.deno" PATH="$DENO_INSTALL/bin:$PATH";\\nwhich deno &>/dev/null || curl -fsSL https://deno.land/install.sh | sh -\\n' > "$HOME/.bashrc.d/123-deno" && \
+    echo '#!/usr/bin/env bash\\n\\nexport DENO_INSTALL="$HOME/.deno" PATH="$DENO_INSTALL/bin:$PATH";\\nwhich deno &>/dev/null || curl -fsSL https://deno.land/install.sh | sh -;\\nwhich deno &>/dev/null && deno upgrade --force --quiet --unstable;\\n' > "$HOME/.bashrc.d/123-deno" && \
     chmod +x "$HOME/.bashrc.d/123-deno" ;
 
 # install the homebrew packages from ~/.Brewfile
 RUN brew bundle install --global --no-lock ; \
     sudo ln -s $(which gpg) $(which gh) /usr/local/bin/ &>/dev/null; \
-    ln -f "$HOME/gitignore" "$HOME/.gitignore" &>/dev/null; \
-    ln -f "$HOME/gitconfig" "$HOME/.gitconfig" &>/dev/null; \
+    mv -f "/home/gitpod/gitignore" "/home/gitpod/.gitignore" &>/dev/null; \
+    mv -f "/home/gitpod/gitconfig" "/home/gitpod/.gitconfig" &>/dev/null; \
     echo -e "\n\e[1;92;7m SUCCESS! \e[0;1;3;92m gitpod-enhanced setup completed \e[0m\n";
 
 ## ----------------------------------------------------- ##
-##       https://git.io/gitpod - https://gitpod.tk       ##
+##        Gitpod Enhanced - https://git.io/gitpod        ##
 ## ----------------------------------------------------- ##
 ##                MIT © Nicholas Berlette                ##
 ## ----------------------------------------------------- ##

@@ -1,7 +1,6 @@
 <h1 align="center"><a href="https://github.com/nberlette/gitpod-enhanced"><code>gitpod-enhanced</code></a></h1>
 <div align="center">
   <a href="https://gitpod.io/#https://github.com/nberlette/gitpod-enhanced" target="_blank" title="Open in Gitpod: Ready to Code"><img src="https://img.shields.io/badge/Prebuild-READY%20%E2%86%97-brightgreen.svg?logo=gitpod&style=for-the-badge" alt="Open in Gitpod: Ready to Code" /></a>
-  <a href="https://github.com/nberlette/gitpod-enhanced/actions/workflows/docker-release.yml" title="CI Build Status: Docker Image"><img alt="GitHub Workflow Status" src="https://img.shields.io/github/workflow/status/nberlette/gitpod-enhanced/Release%20Docker%20Image?label=Build&logo=docker&style=for-the-badge"></a>
   <img src="https://img.shields.io/badge/Bash-gray.svg?logo=gnubash&logoColor=white&style=for-the-badge" alt="GNU Bash: Bourne Again Shell" />
   <img src="https://img.shields.io/badge/PNPM-gray.svg?logo=pnpm&logoColor=white&style=for-the-badge" alt="PNPM: Performant Node Package Management" />
   <img src="https://img.shields.io/badge/TypeScript-gray.svg?logo=typescript&logoColor=white&style=for-the-badge" alt="PNPM: Performant Node Package Management" />

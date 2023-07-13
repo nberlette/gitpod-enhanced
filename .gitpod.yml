@@ -45,21 +45,17 @@ gitConfig:
 
 vscode:
   extensions:
-    - github.copilot-nightly
     - ms-azuretools.vscode-docker
     - esbenp.prettier-vscode
     - dbaeumer.vscode-eslint
     - christian-kohler.npm-intellisense
     - christian-kohler.path-intellisense
-    - eg2.vscode-npm-script
     - Jacano.vscode-pnpm
-    - gamunu.vscode-yarn
     - timonwong.shellcheck
     - foxundermoon.shell-format
     - mads-hartmann.bash-ide-vscode
     - redhat.vscode-yaml
     - vsls-contrib.gitdoc
-    - robertz.code-snapshot
     - ms-vscode.cmake-tools
 
 ports:

@@ -29,34 +29,26 @@ RUN curl -fsSL "https://github.com/nberlette/dotfiles/archive/main.tar.gz" | \
     --strip-components=1 -o --owner=gitpod --group=gitpod ;
 
 # clean some things up with .gitconfig and .gitignore
-RUN rm -f "$HOME/.profile" &>/dev/null; \
-    # fix unsafe permissions on .gnupg folder
-    chmod 700 "$HOME/.gnupg";
+RUN rm -f "$HOME/.profile" &>/dev/null; chmod 700 "$HOME/.gnupg";
     
 # download and run standalone pnpm installer
-RUN which pnpm &>/dev/null || { \
-        curl -fsSL https://get.pnpm.io/install.sh | bash -; \
-        pnpm env use --global lts 2>/dev/null; \
-    }; 
+RUN if ! command -v pnpm &>/dev/null; then curl -fsSL https://get.pnpm.io/install.sh | bash - && pnpm env use --global latest 2>/dev/null; fi
 
 # update pnpm and install some development tools
 RUN pnpm add -g pnpm vercel wrangler miniflare netlify-cli @railway/cli dotenv-vault; pnpm add -g zx harx esno degit bumpp vitest eslint unbuild prettier typescript ; pnpm add -g @brlt/n @brlt/prettier @brlt/eslint-config ; 
     
-    
 RUN export HOMEBREW_PREFIX="${HOMEBREW_PREFIX:-/home/linuxbrew/.linuxbrew}"; \
-    export DENO_INSTALL="${HOME}/.deno"; \
-    export PATH="${DENO_INSTALL}/bin:${HOMEBREW_PREFIX}/bin:${PATH}"; \ 
-    mkdir -p "$DENO_INSTALL"; \
-    curl -fsSL https://deno.land/install.sh | sh - ; \
-    chown -R gitpod "$DENO_INSTALL"; \
-    echo '#!/usr/bin/env bash\\n\\nexport DENO_INSTALL="$HOME/.deno" PATH="$DENO_INSTALL/bin:$PATH";\\nwhich deno &>/dev/null || curl -fsSL https://deno.land/install.sh | sh -;\\nwhich deno &>/dev/null && deno upgrade --force --quiet --unstable;\\n' > "$HOME/.bashrc.d/123-deno" && \
-    chmod +x "$HOME/.bashrc.d/123-deno" ;
+    export DENO_INSTALL="${HOME}/.deno"; export PATH="${DENO_INSTALL}/bin:${HOMEBREW_PREFIX}/bin:${PATH}"; \ 
+    mkdir -p "$DENO_INSTALL"; chown -R gitpod "$DENO_INSTALL"; curl -fsSL https://deno.land/install.sh | sh - ; deno upgrade --canary --force --quiet; \
+    echo '#!/usr/bin/env bash\n\nexport DENO_INSTALL="$HOME/.deno" PATH="$DENO_INSTALL/bin:$PATH";\nif ! command -v deno &>/dev/null; then curl -fsSL https://deno.land/install.sh | sh -; fi\ndeno upgrade --force -q --unstable --canary\n' > "$HOME/.bashrc.d/123-deno" && chmod +x "$HOME/.bashrc.d/123-deno"; \
+    echo '#!/usr/bin/env bash\n\nif command -v bun &>/dev/null; then bun upgrade; else curl -fsSL https://bun.sh/install | bash; fi\n' > "$HOME/.bashrc.d/123-bun" && chmod +x "$HOME/.bashrc.d/200-bun" ; \
+    curl -fsSL https://bun.sh/install | bash ; 
 
 # install the homebrew packages from ~/.Brewfile
 RUN brew bundle install --global --no-lock ; \
-    sudo ln -s $(which gpg) $(which gh) /usr/local/bin/ &>/dev/null; \
-    mv -f "/home/gitpod/gitignore" "/home/gitpod/.gitignore" &>/dev/null; \
-    mv -f "/home/gitpod/gitconfig" "/home/gitpod/.gitconfig" &>/dev/null; \
+    sudo ln -s $(which gpg &>/dev/null) $(which gh &>/dev/null) /usr/local/bin/ &>/dev/null; \
+    echo "$(cat "$HOME/gitignore")" >> "$HOME/.gitignore"; echo "$(cat "$HOME/gitconfig")" >> "$HOME/.gitconfig"; \
+    rm -f "$HOME/gitignore" "$HOME/gitconfig" "$HOME/.Brewfile" "$HOME/.tarignore" &>/dev/null; \
     echo -e "\n\e[1;92;7m SUCCESS! \e[0;1;3;92m gitpod-enhanced setup completed \e[0m\n";
 
 ## ----------------------------------------------------- ##
